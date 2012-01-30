@@ -1,0 +1,167 @@
+div.outer {
+	height: 100%;
+}
+
+div#wrapper {
+	margin-top:0;
+}
+
+#megazine {
+	outline: none;
+}
+
+
+div.book
+{
+	width:200px;
+	height:250px;
+	float:left;
+	margin:1em 16px;
+	border:1px solid #ccc;
+	overflow:hidden;
+	position:relative
+}
+
+div.book h2
+{
+	text-transform:uppercase;
+	font-size:1em;
+	text-align:center;
+	color:#C70000;
+	font-weight:bold;
+	margin:0.5em 0;
+}
+
+div.book h2 a
+{
+	color:#C70000;
+}
+
+div.book .book-preview
+{
+	text-align:center
+}
+
+div.book .book-detail
+{
+	display:none;
+	position:absolute;
+	background:#eee;
+	opacity:0.8;
+	bottom:0;
+	width:100%;
+	padding:5px 0;
+}
+
+div.book .book-detail p
+{
+	margin:0;
+	padding:0 5px;
+	font-size:0.9em;
+	font-weight:bold;
+	clear:both;
+	line-height:1.5em;
+}
+
+div.book .book-detail p span,
+div.book .book-detail p a
+{
+	font-weight:normal;
+}
+
+div.book .book-detail p a
+{
+	font-weight:bold;
+}
+
+div.book .book-detail p.flippa
+{
+	clear:none;
+	float:left;
+	margin-left:2em;
+}
+
+div.book .book-detail p.sfoglia
+{
+	clear:none;
+	float:right;
+	margin-right:2em
+}
+
+div.book .show
+{
+	display:block
+}
+
+
+a.button, a.defaultbutton, input.button, button, input.defaultbutton, input.button-disabled
+{
+	margin: 0.7em 0.5em 0.7em 0;
+	padding:2px 5px 2px 7px;   /* Links */
+	border:1px solid #ccc;
+	background-color:#ccc;
+	font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+	font-size:0.9em;
+	text-decoration:none;
+	font-weight:bold;
+	color:#666;
+	cursor:pointer;
+	-moz-border-radius:5px;
+	-khtml-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	-moz-box-shadow:rgba(200,200,200,1) 2px 2px 5px;
+	-webkit-box-shadow:rgba(200,200,200,1) 2px 2px 5px;
+	-khtml-box-shadow:rgba(200,200,200,1) 2px 2px 5px;
+	box-shadow:rgba(200,200,200,1) 2px 2px 5px;
+}
+
+a.defaultbutton, input.defaultbutton
+{
+	border:1px solid #000;
+	background-color:#000;
+	color:#fff !important;
+	-moz-box-shadow:rgba(005,005,005,1) 2px 2px 5px;
+	-webkit-box-shadow:rgba(005,005,005,1) 2px 2px 5px;
+	-khtml-box-shadow:rgba(005,005,005,1) 2px 2px 5px;
+	box-shadow:rgba(005,005,005,1) 2px 2px 5px;
+}
+
+a.button, a.defaultbutton, button 
+{
+	display:block;
+	float:left;
+}
+
+button img, a.button img
+{
+	margin:0 3px -3px 0 !important;
+	padding:0;
+	border:none;
+	width:16px;
+	height:16px;
+	float:none;
+}
+
+/* Button colors */
+
+/* Standard */
+input.button:hover, button:hover, a.button:hover,
+input.defaultbutton:hover, button:hover, a.defaultbutton:hover
+{
+	background-color:#f00;
+	border:1px solid #f00;
+	color:#fff !important;
+}
+a.button:active
+{
+	background-color:#6299c5;
+	border:1px solid #6299c5;
+	color:#fff;
+}
+
+input.button-disabled
+{
+    cursor: default;
+    color: #999;
+}

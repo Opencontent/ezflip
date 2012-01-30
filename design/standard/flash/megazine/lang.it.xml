@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lang id="it">
+    <langstring name="LNG_LANGUAGE_NAME">Italiano</langstring>
+    
+    <langstring name="LNG_SLIDESHOW_START">Inizia presentazione</langstring>
+    <langstring name="LNG_SLIDESHOW_STOP">Ferma presentazione</langstring>
+    <langstring name="LNG_FIRST_PAGE">Prima</langstring>
+    <langstring name="LNG_LAST_PAGE">Ultima</langstring>
+    <langstring name="LNG_GOTO_PAGE">Va a pagina $1</langstring>
+    <langstring name="LNG_GOTO_PAGE_DIALOG">Clicca per scrivere il numero di pagina.</langstring>
+    <langstring name="LNG_NEXT_PAGE">Successiva</langstring>
+    <langstring name="LNG_PREV_PAGE">Precedente</langstring>
+	
+	<langstring name="LNG_GOTO_DIALOG_TIP">Inserisci un numero di pagina e premi Invio.</langstring>
+    
+    <langstring name="LNG_FULLSCREEN">Avvia modalità schermo intero (le scorciatoie da tastiera non funzioneranno)</langstring>
+    <langstring name="LNG_RESTORE">Esci dalla modalità schermo intero</langstring>
+    <langstring name="LNG_MUTE">Silenzio</langstring>
+    <langstring name="LNG_UNMUTE">Suono</langstring>
+    
+    <langstring name="LNG_SETTINGS">Opzioni</langstring>
+    <langstring name="LNG_SETTINGS_ACCEPT">Salva opzioni</langstring>
+    <langstring name="LNG_SHADOWS">Ombre</langstring>
+    <langstring name="LNG_SHADOWS_LONG">Ombre e luci quando si sfoglia (Lieve impatto sulle prestazioni).</langstring>
+    <langstring name="LNG_REFLECTION">Riflesso</langstring>
+    <langstring name="LNG_REFLECTION_LONG">Riflesso della pagina (Pesante impatto sulle prestazioni).</langstring>
+    
+    <langstring name="LNG_ZOOM_IN">Zoom</langstring>
+    <langstring name="LNG_ZOOM_EXIT">Esci dallo zoom</langstring>
+    <langstring name="LNG_ZOOM_NEXT">Successiva</langstring>
+    <langstring name="LNG_ZOOM_PREV">Precedente</langstring>
+    <langstring name="LNG_ZOOM_ROTATE_RIGHT">Ruota in senso orario</langstring>
+    <langstring name="LNG_ZOOM_ROTATE_LEFT">Ruota in senso antiorario</langstring>
+    
+    <langstring name="LNG_PASSWORD">Password</langstring>
+    <langstring name="LNG_LOADING_ZOOM">Caricamento in corso... $1%</langstring>
+    
+	<langstring name="LNG_HELP">Mostra Aiuto</langstring>
+	<langstring name="LNG_HELP_CLOSE">Chiudi Aiuto</langstring>
+	<langstring name="LNG_HELP_NEXT">Prossimo suggerimento</langstring>
+	<langstring name="LNG_HELP_PREV">Suggerimento precedente</langstring>
+	
+	<!-- Note: help messages should not contain new lines. Use <br/> tags instead. -->
+    <langstring name="LNG_HELP1"><![CDATA[<b>Benvenuto</b><br/><br/>Per navigare in questa rivista puoi utilizzare i tasti freccia sulla tastiera (a sinistra, a destra) o fare clic sugli angoli della pagina. È inoltre possibile trascinare le pagine cliccando su un angolo e trascinandolo verso l'angolo opposto, tenendo premuto il tasto sinistro del mouse.]]></langstring>
+    <langstring name="LNG_HELP1B"><![CDATA[<b>Benvenuto</b><br/><br/>Per navigare in questa rivista puoi utilizzare i tasti freccia sulla tastiera (a sinistra, a destra) o fare clic sugli angoli della pagina. È inoltre possibile trascinare le pagine cliccando su un angolo e trascinandolo verso l'angolo opposto, tenendo premuto il tasto sinistro del mouse.]]></langstring>
+	
+    <langstring name="LNG_HELP2"><![CDATA[<b>Navigazione</b><br/><br/>Per passare velocemente da una pagina a un'altra pagina puoi cliccare sui puntini. <br/> <br/> Al passaggio del mouse sarà creata un'anteprima della pagina. Puoi metterci qualche secondo per generare l'anteprima, ti prego di essere paziente.]]></langstring>
+	
+    <langstring name="LNG_HELP3"><![CDATA[<b>Zoom Mode</b><br/><br/>If there is a small magnifiying glass on a page (usually on top of an image) this means there is higher resolution version available. Click on the magnifying glass to open zoom mode.<br/><br/>In zoom mode, use the mousewheel to zoom in and out. If the image is larger than the display area, drag the image or the rectangle on the thumbnail (top right) to move the visible area.<br/><br/>If the image is part of a gallery two arrow buttons will appear in the box in the top right corner, which may be used to navigate between images in that gallery.<br/><br/>Use the X button in the thumbnail box or the ESC key to exit the zoom mode.]]></langstring>
+	
+    <langstring name="LNG_HELP4"><![CDATA[<b>Fullscreen</b><br/><br/>Use the leftmost button in the navigation bar to enable fullscreen mode. Its main purpose is to allow a better display of zoomed images, as in fullscreen mode the whole screen is used for zoom mode, in contrast to just the area two pages take in non-fullscreen.<br/><br/>Usually entering zoom mode also triggers a change to fullscreen mode. If this is not the case you may use that button to enter fullscreen mode manually.]]></langstring>
+	
+    <langstring name="LNG_HELP5"><![CDATA[<b>Slideshow</b><br/><br/>The button in the navigation with the "play" symbol will toggle the slideshow mode, i.e. automatic page turning. Every page will then be displayed for a certain amount of time before an automatic page turn to the next page is triggered.]]></langstring>
+</lang>

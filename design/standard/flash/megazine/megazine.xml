@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE book SYSTEM "http://megazine.mightypirates.de/megazine.dtd">
+<book lang="it" pagewidth="300" pageheight="427" zoominit="1000" zoomcontrolalpha="0.5" zoomrotate="false">
+	<chapter>
+		<page>
+			<img src="src/thumb/vt2201_01.jpg" hires="src/vt2201_01.jpg" gallery="myGallery"/>
+		</page>
+		<page>
+			<img src="src/thumb/vt2201_01.jpg" hires="src/vt2201_01.jpg" gallery="myGallery"/>
+		</page>
+		<page>
+			<img src="src/thumb/vt2201_01.jpg" hires="src/vt2201_01.jpg" gallery="myGallery"/>
+		</page>
+		<page>
+			<img src="src/thumb/vt2201_01.jpg" hires="src/vt2201_01.jpg" gallery="myGallery"/>
+		</page>
+		<page>
+			<img src="src/thumb/vt2201_01.jpg" hires="src/vt2201_01.jpg" gallery="myGallery"/>
+		</page>
+		<page>
+			<img src="src/thumb/vt2201_01.jpg" hires="src/vt2201_01.jpg" gallery="myGallery"/>
+		</page>
+	</chapter>
+</book>
