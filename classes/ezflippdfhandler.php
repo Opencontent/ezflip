@@ -37,7 +37,7 @@ class eZFlipPdfHandler
 		*/
 		$folder = $cli ? $folder : eZSys::rootDir() . eZSys::fileSeparator() . $folder;
 		$filename = $cli ? '../../application/' . basename( $filename ) : eZSys::rootDir() . eZSys::fileSeparator() . $filename;
-		$command = 'cd '. $folder . '; nice pdftk ' . $filename . ' burst';
+		$command = 'cd '. $folder . '; nice -n 19 pdftk ' . $filename . ' burst';
 		
         if ( $cli )
         {
