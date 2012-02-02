@@ -78,12 +78,22 @@ class ezFlip
             $cli->output( 'Controllo le configurazioni' );
 		if ( !empty( $ret['errors'] ) )
 			return $ret;
-		
-		$files = self::preparePdf( $args, $cli );
+
         if ( $cli )
-            $cli->output( 'Preparo il file PDF' );
+            $cli->output( 'Preparo il file PDF' );		
+		$files = self::preparePdf( $args, $cli );
+
 		if ( isset( $files['errors'] ) )
+        {
+            if ( $cli )
+            {
+                foreach( $files['errors'] as $error  )
+                {
+                    $cli->output( $error );
+                }
+            }
 			return $files;
+        }
 
 		foreach ($files as $k => $file) 
 		{
@@ -249,7 +259,9 @@ class ezFlip
 		$flip_dir = self::flipFolderPath ( $ret['object_id'] );
 		
 		eZDir::recursiveDelete( $flip_dir );			
-		eZDir::mkdir( $flip_dir, false, true );
+		$success = eZDir::mkdir( $flip_dir, false, true );
+        if ( !$success )
+            return array( 'errors' => array( 'Impossibile creare la cartella ' . $flip_dir ) );
 		
 		$ini = eZINI::instance( 'site.ini' );
 		$var = $ini->variable( 'FileSettings','VarDir' );
