@@ -7,7 +7,7 @@ class eZFlipPdfHandler
 
     public static function createImageFromPDF ( $size, $file_path, $filename, $page_name, $options='' ) 
 	{
-		$command = "convert " . $options . " -resize " . $size . " -colorspace RGB ".$file_path."/".$filename." ".$file_path."/" . $page_name;
+		$command = "nice -n 19 convert " . $options . " -resize " . $size . " -colorspace RGB ".$file_path."/".$filename." ".$file_path."/" . $page_name;
 		
 		eZDebug::writeNotice( 'converto ' . $filename . ' alle dimensioni di ' . $size  , __METHOD__ );
 		
@@ -37,11 +37,11 @@ class eZFlipPdfHandler
 		*/
 		$folder = $cli ? $folder : eZSys::rootDir() . eZSys::fileSeparator() . $folder;
 		$filename = $cli ? '../../application/' . basename( $filename ) : eZSys::rootDir() . eZSys::fileSeparator() . $filename;
-		$command = 'cd '. $folder . '; pdftk ' . $filename . ' burst';
+		$command = 'cd '. $folder . '; nice pdftk ' . $filename . ' burst';
 		
         if ( $cli )
         {
-    		$cli->output( 'Eseguo: cd '. $folder . '; pdftk ' .$filename . ' burst' );		        
+    		$cli->output( 'Eseguo: cd '. $folder . '; nice -n 19 pdftk ' .$filename . ' burst' );		        
         }
         else
         {
