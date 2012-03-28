@@ -12,9 +12,9 @@
 {if $content_object.data_map.file.has_content}
     {if eq( $content_object.data_map.file.content.mime_type, 'application/pdf' )}
         {if flip_exists( $content_object.id )|not() }
-            <a href={concat("/flip/enqueue/", $content_object.data_map.file.content.contentobject_attribute_id, '/', $content_object.data_map.file.content.version, '/', $content_object.id, '/', $content_object.main_node_id)|ezurl} title="Rendi sfogliabile il file {$content_object.data_map.file.content.original_filename}"><img src={"ezwt-icon-pdf-upload.gif"|ezimage} alt="Rendi sfogliabile il file {$content_object.data_map.file.content.original_filename}" /></a>
+            <a href={concat("/flip/enqueue/", $content_object.data_map.file.content.contentobject_attribute_id, '/', $content_object.data_map.file.content.version, '/', $content_object.id, '/', $content_object.main_node_id)|ezurl} title="Rendi sfogliabile il file {$content_object.data_map.file.content.original_filename}"><img width="16" height="16" src={"ezwt-icon-pdf-upload.gif"|ezimage} alt="Rendi sfogliabile il file {$content_object.data_map.file.content.original_filename}" /></a>
         {else}
-            <a href={concat("/flip/enqueue/", $content_object.data_map.file.content.contentobject_attribute_id, '/', $content_object.data_map.file.content.version, '/', $content_object.id, '/', $content_object.main_node_id, '/1')|ezurl} title="Rendi sfogliabile il file {$content_object.data_map.file.content.original_filename}"><img src={"ezwt-icon-pdf-upload.gif"|ezimage} alt="Rendi sfogliabile il file {$content_object.data_map.file.content.original_filename}" /></a>
+            <a href={concat("/flip/enqueue/", $content_object.data_map.file.content.contentobject_attribute_id, '/', $content_object.data_map.file.content.version, '/', $content_object.id, '/', $content_object.main_node_id, '/1')|ezurl} title="Rendi sfogliabile il file {$content_object.data_map.file.content.original_filename}"><img width="16" height="16" src={"ezwt-icon-pdf-upload.gif"|ezimage} alt="Rendi sfogliabile il file {$content_object.data_map.file.content.original_filename}" /></a>
 
         {/if}
     {/if}
