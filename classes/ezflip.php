@@ -15,7 +15,7 @@ class ezFlip
 		$ini = eZINI::instance( 'site.ini' );
 		$var = $ini->variable( 'FileSettings','VarDir' );
 		$flip_dir = $var . '/storage/original/application_flip/' . $object_id;
-		eZDebug::writeNotice( 'flip_dir: ' . $flip_dir , __METHOD__ );
+		eZDebug::writeNotice( 'flip_dir: ' . $flip_dir . ' ' . var_export( file_exists( $flip_dir ), 1 ), __METHOD__ );
 		return $flip_dir;
 	}
 	
@@ -300,6 +300,31 @@ class ezFlip
             if ( $file->exists() )
             {
                 return true;
+            }
+        }
+        return false;
+
+    }
+
+    public static function get_page_dimensions( $object_id, $bookName )
+    {
+        $file = self::flipFolderPath( $object_id );
+        $ini = eZINI::instance( 'ezflip.ini' );		
+		$books = $ini->variable( 'FlipBookSettings', 'FlipBook');		
+		foreach ( $books as $book )
+        {
+            if ( $book == $bookName )
+            {
+                $file = $file . "/magazine_" . $book . ".xml";
+                $fileObject = eZClusterFileHandler::instance( $file );
+                if ( $fileObject->exists() )
+                {
+                    $xml = simplexml_load_file( $file );
+                    $pagewidth = $xml['pagewidth'];
+                    $pageheight = $xml['pageheight'];
+                    $pageheight = $pageheight + 100;
+                    return array( $pagewidth, $pageheight );
+                }
             }
         }
         return false;

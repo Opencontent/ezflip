@@ -1,5 +1,6 @@
 {if flip_exists( $node.contentobject_id )}
 {ezpagedata_set( 'extra_menu', false() )}
+{ezpagedata_set( 'left_menu', false() )}
 {/if}
 
 
@@ -11,7 +12,7 @@
     <div class="class-file">
 
     <div class="attribute-header">
-        <h1>{$node.name|wash()}</h1>
+        <h1>{if $node.parent_node_id|ne(2)}<a href={$node.parent.url_alias|ezurl}><span>{$node.parent.name|wash} | </span></a>{/if}{$node.name|wash()}</h1>
     </div>
 
     {if $node.data_map.description.content.is_empty|not}
@@ -20,9 +21,11 @@
         </div>
     {/if}
 
-
     {if flip_exists( $node.contentobject_id )}
-
+        
+        {def $pageDim = get_page_dimensions( $node.contentobject_id, 'large' )
+             $heigth = $pageDim[1]}
+        
         {ezscript_require( array( 'megazine.js', 'swfaddress.js', 'swfobject.js' ) )}
         {ezcss_require( array('flip.css') )}
         
@@ -32,7 +35,7 @@
             {/literal}{concat( 'flash/megazine/megazine.swf')|ezdesign}{literal},
             "megazine",
             "100%",
-            "600",
+            "{/literal}{$heigth}{literal}",
             "9.0.115",
             {/literal}{concat( 'flash/swfobject/expressInstall.swf')|ezdesign}{literal}, 
             {
@@ -77,13 +80,16 @@
                 
         </div>
     
-    {else}
-
-        <div class="attribute-file">
-            <p>{attribute_view_gui attribute=$node.data_map.file icon_title=$node.name}</p>
-        </div>
     
     {/if}
+
+        <div class="attribute-file">
+            <p>
+                <a href={concat("content/download/",$node.data_map.file.contentobject_id,"/",$node.data_map.file.id,"/file/",$node.data_map.file.content.original_filename)|ezurl}>
+                    {$node.data_map.file.content.mime_type|mimetype_icon( small, $node.data_map.file.content.mime_type )} {$node.data_map.file.content.original_filename|wash( xhtml )}
+                </a> {$node.data_map.file.content.filesize|si( byte )}
+            </p>
+        </div>
 
     </div>
 </div>

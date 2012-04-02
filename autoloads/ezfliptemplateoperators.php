@@ -8,7 +8,7 @@ class ezflipTemplateOperators
 
     function operatorList()
     {
-        return array( 'flip_exists' );
+        return array( 'flip_exists', 'get_page_dimensions' );
     }
 
     function namedParameterPerOperator()
@@ -18,10 +18,15 @@ class ezflipTemplateOperators
 
     function namedParameterList()
     {
-        return array( 'flip_exists' => array( 'id' => array( 'type' => 'integer',
-                                              'required' => true,
-                                              'default' => 0 ))
-                      );
+        return array(
+            'flip_exists' => array(
+                'id' => array( 'type' => 'integer', 'required' => true, 'default' => 0 )
+            ),
+            'get_page_dimensions' => array(
+                'id' => array( 'type' => 'integer', 'required' => true, 'default' => 0 ),
+                'book' => array( 'type' => 'string', 'required' => true, 'default' => 'null' )
+            )
+        );
                                               
     }
 
@@ -32,6 +37,10 @@ class ezflipTemplateOperators
             case 'flip_exists':
             {
                 return $operatorValue = ezFlip::has_converted( $namedParameters['id'] );
+            } break;
+            case 'get_page_dimensions':
+            {
+                return $operatorValue = ezFlip::get_page_dimensions( $namedParameters['id'], $namedParameters['book']  );
             } break;
         }
         $operatorValue = $ret;

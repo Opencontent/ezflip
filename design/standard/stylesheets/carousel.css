@@ -310,6 +310,11 @@ ul.jcarousel-list li.jcarousel-item {
     border:none !important;
 }
 
+.banner-carousel ul .attribute-image p img
+{
+    cursor:pointer;
+}
+
 .banner-carousel
 {
 	padding:0;
