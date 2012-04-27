@@ -310,19 +310,23 @@ class ezFlip
     {
         $file = self::flipFolderPath( $object_id );
         $ini = eZINI::instance( 'ezflip.ini' );		
-		$books = $ini->variable( 'FlipBookSettings', 'FlipBook');		
+		$books = $ini->variable( 'FlipBookSettings', 'FlipBook' );		
 		foreach ( $books as $book )
         {
             if ( $book == $bookName )
             {
                 $file = $file . "/magazine_" . $book . ".xml";
+                $iniBook = $ini->variable( 'FlipBookSettings_' . $book, 'FlipBookSettings_' . $book );
                 $fileObject = eZClusterFileHandler::instance( $file );
                 if ( $fileObject->exists() )
                 {
                     $xml = simplexml_load_file( $file );
                     $pagewidth = $xml['pagewidth'];
                     $pageheight = $xml['pageheight'];
-                    $pageheight = $pageheight + 100;
+                    if ( isset( $iniBook['navigation'] ) && $iniBook['navigation'] !== 'false' )
+                    {
+                        $pageheight = $pageheight + 100;
+                    }
                     return array( $pagewidth, $pageheight );
                 }
             }
