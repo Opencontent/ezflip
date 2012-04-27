@@ -327,6 +327,10 @@ class ezFlip
                     {
                         $pageheight = $pageheight + 100;
                     }
+                    else
+                    {
+                        $pageheight = $pageheight + 20;
+                    }
                     return array( $pagewidth, $pageheight );
                 }
             }
