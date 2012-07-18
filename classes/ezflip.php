@@ -111,7 +111,7 @@ class ezFlip
         
         if ( $cli )
             $cli->output( 'Svuoto la cache' );
-        eZContentCacheManager::clearObjectViewCache( $args['object_id'] );
+        eZContentCacheManager::clearObjectViewCache( $ret['object_id'] );
         
         eZUser::setCurrentlyLoggedInUser( $currentUser, $currentUser->attribute( 'contentobject_id' ) );
 
@@ -168,6 +168,8 @@ class ezFlip
 			$options='';
 			if ( isset( $sizesOptions[$size] ) )
 				$options = $sizesOptions[$size];
+            if ( isset( $sizesOptions[$key] ) )
+                $options = $sizesOptions[$key];
 			
 			$page_name = "page" . sprintf("%04d", $k) . "_" . $size . ".jpg";
 			eZFlipPdfHandler::createImageFromPDF($size, $flip_dir, $file, $page_name, $options);

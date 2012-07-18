@@ -5,7 +5,7 @@ class eZFlipPdfHandler
 
     public function eZFlipPdfHandler(){}
 
-    public static function createImageFromPDF ( $size, $file_path, $filename, $page_name, $options='' ) 
+    public static function createImageFromPDF ( $size, $file_path, $filename, $page_name, $options = '' ) 
 	{
 		$command = "nice -n 19 convert " . $options . " -resize " . $size . " -colorspace RGB ".$file_path."/".$filename." ".$file_path."/" . $page_name;
 		
