@@ -9,7 +9,7 @@ class eZFlipPdfHandler
 	{
 		$command = "nice -n 19 convert " . $options . " -resize " . $size . " -colorspace RGB ".$file_path."/".$filename." ".$file_path."/" . $page_name;
 		
-		eZDebug::writeNotice( 'converto ' . $filename . ' alle dimensioni di ' . $size  , __METHOD__ );
+		eZDebug::writeNotice( 'converto ' . $filename . ' alle dimensioni di ' . $size . ' (' . $command . ')' ,  __METHOD__ );
 		
 		system($command);
     }

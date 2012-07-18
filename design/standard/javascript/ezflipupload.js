@@ -157,8 +157,8 @@ if(jQuery)(
 				jQuery(this).bind("uploadifyError", {'action': settings.onError}, function(event, ID, fileObj, errorObj) {
 					if (event.data.action(event, ID, fileObj, errorObj) !== false) {
 						var fileArray = new Array(ID, fileObj, errorObj);
-						errorArray.push(fileArray);
-						jQuery("#" + jQuery(this).attr('id') + ID + " .percentage").text(" - " + errorObj.type + " Error");
+						errorArray.push(fileArray);						
+                        jQuery("#" + jQuery(this).attr('id') + ID + " .percentage").text(" - " + errorObj.type + " Error: " + errorObj.info);
 						jQuery("#" + jQuery(this).attr('id') + ID).addClass('uploadifyError');
 					}
 				});
