@@ -15,14 +15,20 @@
         {if flip_exists( $attribute.contentobject_id )}
             <a href={$attribute.object.main_node.url_alias|ezurl}>{$attribute.object.main_node.name|wash( xhtml )}</a>
         {else}
-            <a href={concat("content/download/",$attribute.contentobject_id,"/",$attribute.id,"/file/",$attribute.content.original_filename)|ezurl}>{$attribute.content.original_filename|wash( xhtml )}</a> {$attribute.content.filesize|si( byte )}
+            <a title="Download {$attribute.content.original_filename|wash( xhtml )} {$attribute.content.filesize|si( byte )}" href={concat("content/download/",$attribute.contentobject_id,"/",$attribute.id,"/file/",$attribute.content.original_filename)|ezurl}>
+                {$attribute.object.main_node.name|wash( xhtml )}
+            </a>
         {/if}
     {/case}
     {case}
         {if flip_exists( $attribute.contentobject_id )}
-            <a href={$attribute.object.main_node.url_alias|ezurl}>{$attribute.content.mime_type|mimetype_icon( $icon_size, $icon_title )} {$attribute.object.main_node.name|wash( xhtml )}</a>
+            <a href={$attribute.object.main_node.url_alias|ezurl}>
+                <span class="icon">{$attribute.content.mime_type|mimetype_icon( $icon_size, $icon_title )}</span> {$attribute.object.main_node.name|wash( xhtml )}
+            </a>
         {else}
-            <a href={concat("content/download/",$attribute.contentobject_id,"/",$attribute.id,"/file/",$attribute.content.original_filename)|ezurl}>{$attribute.content.mime_type|mimetype_icon( $icon_size, $icon_title )} {$attribute.content.original_filename|wash( xhtml )}</a> {$attribute.content.filesize|si( byte )}
+            <a title="Download {$attribute.content.original_filename|wash( xhtml )} {$attribute.content.filesize|si( byte )}" href={concat("content/download/",$attribute.contentobject_id,"/",$attribute.id,"/file/",$attribute.content.original_filename)|ezurl}>
+                <span class="icon">{$attribute.content.mime_type|mimetype_icon( $icon_size, $icon_title )}</span> {$attribute.object.main_node.name|wash( xhtml )}
+            </a>
         {/if}
     {/case}
 {/switch}
