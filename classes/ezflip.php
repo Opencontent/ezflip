@@ -340,6 +340,74 @@ class ezFlip
         return false;
 
     }
+    
+    public static function createFirstPagePreview( $object )
+    {
+        $attributeImage = false;
+        $attributeFile = false;
+        $dataMap = $object->attribute( 'data_map' );
+        foreach ( $dataMap as $attribute )
+        {
+            if ( $attribute->attribute( 'data_type_string' ) == 'ezimage' )
+            {
+                $attributeImage = $attribute;
+                eZDebug::writeNotice( "Attribute image found", __METHOD__ );
+            }
+            elseif (
+                 $attribute->attribute( 'data_type_string' ) == 'ezbinaryfile'
+                 && $attribute->attribute( 'has_content' )
+                 && $attribute->attribute( 'content' )->attribute( 'mime_type' ) == 'application/pdf'
+                )
+            {
+                $attributeFile = $attribute;
+                eZDebug::writeNotice( "Attribute file found", __METHOD__ );
+            }
+            else
+            {
+                continue;
+            }
+        }
+        
+        if ( $attributeFile && $attributeImage )
+        {
+            $source = $attributeFile->attribute( 'content' )->attribute( 'filepath' );
+            $page = 0;
+            $width = 800;
+            $height = 800;
+            $pdffile = eZClusterFileHandler::instance( $attributeFile->attribute( 'content' )->attribute( 'filepath' ) );
+            if ( !$pdffile->exists() )
+            {
+                eZDebug::writeError( "File not readable or doesn't exist", __METHOD__ );
+                return false;;
+            }
+            $filename = urlencode( $object->attribute( 'name' ) ) . '.png';
+            $dirPath = eZSys::cacheDirectory();
+            $target = "$dirPath/$filename";
+            if ( !file_exists( $target ) )
+            {
+                $fileHandler = eZClusterFileHandler::instance( $target );
+                $pdffile->fetch(true);
+                $cmd =  "nice -n 19 convert -colorspace RGB -density 600 " . eZSys::escapeShellArgument( $source . "[" . $page . "]" ) . " " . "-resize " . eZSys::escapeShellArgument(  $width . "x" . $height . ">" ) . " " . eZSys::escapeShellArgument( $target );
+                $out = shell_exec( $cmd );
+                $fileHandler = eZClusterFileHandler::instance();
+                $fileHandler->fileStore( $target, 'pdfpreview-image', false );
+                eZDebug::writeDebug( $cmd, "pdfpreview" );
+                if ( $out )
+                {
+                    eZDebug::writeDebug( $out, "pdfpreview" );
+                }
+                $attributeImage->fromString( $target . "|" . $object->attribute( 'name' ) );
+                $db = eZDB::instance();
+                $db->begin();
+                $attributeImage->store();
+                $db->commit();
+                
+                eZContentCacheManager::clearObjectViewCache( $object->attribute( 'id' ) );
+                return true;
+            }
+        }
+        return false;
+    }
 
 }
 

@@ -3,5 +3,6 @@
 [EventSettings]
 ExtensionDirectories[]=ezflip
 AvailableEventTypes[]=event_ezflip
+AvailableEventTypes[]=event_ezpdfpreview
 
 */ ?>
