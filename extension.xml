@@ -3,8 +3,16 @@
     <metadata>
         <name>OpenContent eZFlip Extension</name>
         <version>1.0</version>
-        <copyright>Copyright © 2010 OpenContent</copyright>
+        <copyright>Copyright © 2013 OpenContent</copyright>
         <license>GNU General Public License v2.0</license>
+        <software>
+            <uses>
+                <name>MegaZine 3</name>
+                <license>GNU General Public License v2.0</license>
+                <info_url>http://www.megazine3.de/</info_url>
+                <version>1.3.8</version>
+            </uses>
+        </software>
     </metadata>
     <dependencies>
         <extends>
