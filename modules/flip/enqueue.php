@@ -63,13 +63,6 @@ try
     $Result = array();
     $Result['content'] = $tpl->fetch( "design:ezflip/enqueue.tpl" );
 }
-catch( RuntimeException $e )
-{    
-    $tpl->setVariable( 'commands', eZFlip::wizard() );
-    $tpl->setVariable( 'error', $e->getMessage() );
-    $tpl->setVariable( 'exception', $e->getTraceAsString() );
-    $Result['content'] = $tpl->fetch( "design:ezflip/wizard.tpl" );
-}
 catch( Exception $e )
 {
     $tpl->setVariable( 'error', $e->getMessage() );

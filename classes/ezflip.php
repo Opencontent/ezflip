@@ -7,10 +7,10 @@ class eZFlip
     public $attribute;
     public $files = array();
     public $generateContentObjectImages;
+    public $flipObjectDirectory;
 
     protected $cli;
     protected $isConverted;
-    protected $flipObjectDirectory;
     protected $flipVarDirectory;
     protected $flipObjectDirectoryName;
     protected $pdftkExecutable;
@@ -56,10 +56,9 @@ class eZFlip
 
         $this->attribute = $attribute;
 
-        $this->generateContentObjectImages = (bool) $this->FlipINI->variable( 'FlipSettings', 'GenerateContentObjectImages' ) == 'enabled';
+        $this->generateContentObjectImages = $this->FlipINI->variable( 'FlipSettings', 'GenerateContentObjectImages' ) == 'enabled';
 
         $this->flipVarDirectory = $this->SiteINI->variable( 'FileSettings','VarDir' ) . '/storage/original/application_flip';
-        $this->generateSymLink();
         //@todo make flip folder versioned
         //$this->flipObjectDirectoryName = $this->attribute->attribute( 'id' ) . '-' . $this->attribute->attribute( 'version' );
         $this->flipObjectDirectoryName = $this->attribute->attribute( 'id' );
@@ -94,29 +93,7 @@ class eZFlip
     {
         $ini = eZINI::instance( 'site.ini' );
         $varDir = $ini->variable( 'FileSettings','VarDir' );
-        return basename( $varDir ) . '/' . $this->flipObjectDirectoryName;
-    }
-
-    /*
-     * Generate a symlink from application_flip var dir to megazine folder
-     */
-    protected function generateSymLink()
-    {
-        eZDir::mkdir( $this->flipVarDirectory, false, true );
-        if ( !is_dir( $this->flipVarDirectory ) )
-        {
-            throw new Exception( 'Can not create directory ' .  $this->flipVarDirectory );
-        }
-        $megazineSymlink =  'extension/ezflip/design/standard/flash/megazine/'
-                            . basename( $this->SiteINI->variable( 'FileSettings','VarDir' ) );
-
-        if ( !is_link( $megazineSymlink ) )
-        {
-            if ( !eZFileHandler::symlink( eZSys::rootDir() . eZSys::fileSeparator() . $this->flipVarDirectory, $megazineSymlink ) )
-            {
-                throw new RuntimeException( 'Can not create symlink of ' . $this->flipVarDirectory . ' in ' . $megazineSymlink );
-            }
-        }
+        return '../../../../../../../flip/get/' . basename( $varDir ) . '/' . $this->attribute->attribute( 'id' ) . '/' . $this->attribute->attribute( 'version' );
     }
 
     /*
@@ -182,7 +159,7 @@ class eZFlip
                     throw new Exception( 'failed creating ' . $pageName );
                 }
 
-                if ( $this->generateContentObjectImages )
+                if ( $this->generateContentObjectImages && $size == 'large' )
                 {
                     eZFlipImageHandler::createThumb( $this->flipObjectDirectory,
                                                      $pageName,
@@ -309,19 +286,6 @@ class eZFlip
         }
         return false;
     }
-    
-    public static function wizard()
-    {
-        $megazineSymlink =  basename( eZINI::instance()->variable( 'FileSettings','VarDir' ) );
-        
-        $varDirectory = eZSys::rootDir() . eZSys::fileSeparator() . eZINI::instance()->variable( 'FileSettings','VarDir' ) . '/storage/original/application_flip';;
-        
-        $commands = 'cd ' . eZSys::rootDir() . '/extension/ezflip/design/standard/flash/megazine/' . "; \n";
-        $commands .= 'ln -s ' . $varDirectory . ' ' . $megazineSymlink . "; \n";
-        
-        return $commands;
-    }
-
 }
 
 ?>
