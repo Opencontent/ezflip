@@ -1,0 +1,103 @@
+body.no-js .no-js-hide
+{
+	display:none !important;
+}
+
+body.js .no-js-show
+{
+	display:none !important;
+}
+
+div.outer {
+	height: 100%;
+}
+
+div#wrapper {
+	margin-top:0;
+}
+
+#megazine {
+	outline: none;
+}
+
+div.book
+{
+	width:200px;
+	height:250px;
+	float:left;
+	margin:1em 16px;
+	border:1px solid #ccc;
+	overflow:hidden;
+	position:relative
+}
+
+div.book h2
+{
+	text-transform:uppercase;
+	font-size:1em;
+	text-align:center;
+	color:#C70000;
+	font-weight:bold;
+	margin:0.5em 0;
+}
+
+div.book h2 a
+{
+	color:#C70000;
+}
+
+div.book .book-preview
+{
+	text-align:center
+}
+
+div.book .book-detail
+{
+	display:none;
+	position:absolute;
+	background:#eee;
+	opacity:0.8;
+	bottom:0;
+	width:100%;
+	padding:5px 0;
+}
+
+div.book .book-detail p
+{
+	margin:0;
+	padding:0 5px;
+	font-size:0.9em;
+	font-weight:bold;
+	clear:both;
+	line-height:1.5em;
+}
+
+div.book .book-detail p span,
+div.book .book-detail p a
+{
+	font-weight:normal;
+}
+
+div.book .book-detail p a
+{
+	font-weight:bold;
+}
+
+div.book .book-detail p.flippa
+{
+	clear:none;
+	float:left;
+	margin-left:2em;
+}
+
+div.book .book-detail p.sfoglia
+{
+	clear:none;
+	float:right;
+	margin-right:2em
+}
+
+div.book .show
+{
+	display:block
+}
