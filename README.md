@@ -1,13 +1,6 @@
 ## OpenContent eZFlip
 
-Convert your ezbinary pdf files in a flip book.
-
-### Warning
-This extension uses an old Open Source version of third part software [MegaZine3](http://www.megazine3.de/demo_packages.html) (version 1.38):
-keep in mind that there will be no bug fixes, enhancements or answers on questions any longer.
-To make this old MegaZine verision working, you need to create a symbolic link to the folder that contains the flash: no problem eZFlip can do that for you, or, if your webserver user doesn't have the permission, eZFlip will print the command that need.
-But - and this is the real warning - could be a privilege escalation in the file pdf reading that you made flippable and you don't want make public.
-
+Convert your ezbinary pdf files in a flash-based flip book.
 
 ### Requirements
 
@@ -19,5 +12,13 @@ But - and this is the real warning - could be a privilege escalation in the file
 
 Enable the extension; clear all caches.
 
-### Make a pdf flippable
+Add the ezflip cron `php runcronjobs.php -s<siteaccess> ezflip` to your crontab
 
+
+### How to make a pdf flippable
+
+If the current node has an ezbinarytype attribute and hit content is a pdf file, you will see a small book icon in the website toolbar. From website toolbar press the 'book' icon and follow the instructions. The cronjob will make the file flippable. 
+
+### Warning
+This extension uses an old Open Source version of third part software [MegaZine3](http://www.megazine3.de/demo_packages.html) (version 1.38):
+keep in mind that there will be no bug fixes, enhancements or faq any longer.
