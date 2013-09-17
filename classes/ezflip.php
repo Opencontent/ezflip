@@ -114,7 +114,7 @@ class eZFlip
         {
             if ( !eZFileHandler::symlink( eZSys::rootDir() . eZSys::fileSeparator() . $this->flipVarDirectory, $megazineSymlink ) )
             {
-                throw new Exception( 'Can not create symlink of ' . $this->flipVarDirectory . ' in ' . $megazineSymlink );
+                throw new RuntimeException( 'Can not create symlink of ' . $this->flipVarDirectory . ' in ' . $megazineSymlink );
             }
         }
     }
@@ -135,7 +135,7 @@ class eZFlip
         $storedFile = $this->attribute->storedFileInformation( false, false, false );;
         $storedFilePath = $this->SiteINI->variable( 'FileSettings','VarDir' ) . '/' . $storedFile['filepath'];
         eZFlipPdfHandler::splitPDFPages( $this->flipObjectDirectory, $storedFilePath, $this->cli );
-        $this->readFiles();
+        $this->readFiles();        
         return $this;
     }
 
@@ -147,9 +147,10 @@ class eZFlip
         {
             if ( $item['type'] == 'file' && eZFile::suffix( $item['name'] ) == 'pdf' && !in_array( $item['name'], $this->files ) )
             {
-                $this->files[] = $item['name'];
+                $this->files[$item['name']] = $item['name'];
             }
         }
+        ksort( $this->files );
     }
 
     protected function createImages()
@@ -160,8 +161,7 @@ class eZFlip
         }
         $sizes = $this->FlipINI->variable( 'FlipSettings', 'SizeThumb');
         $sizesOptions = $this->FlipINI->variable( 'FlipSettings', 'SizeThumbOptions');
-
-        $i = 0;
+        
         foreach( $this->files as $file )
         {
             $i++;
@@ -308,7 +308,18 @@ class eZFlip
             }
         }
         return false;
-
+    }
+    
+    public static function wizard()
+    {
+        $megazineSymlink =  basename( eZINI::instance()->variable( 'FileSettings','VarDir' ) );
+        
+        $varDirectory = eZSys::rootDir() . eZSys::fileSeparator() . eZINI::instance()->variable( 'FileSettings','VarDir' ) . '/storage/original/application_flip';;
+        
+        $commands = 'cd ' . eZSys::rootDir() . '/extension/ezflip/design/standard/flash/megazine/' . "; \n";
+        $commands .= 'ln -s ' . $varDirectory . ' ' . $megazineSymlink . "; \n";
+        
+        return $commands;
     }
 
 }

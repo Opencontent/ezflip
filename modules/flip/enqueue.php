@@ -15,51 +15,66 @@ if ( !$contentObjectAttribute instanceof eZContentObjectAttribute )
     return $module->handleError( eZError::KERNEL_NOT_FOUND, 'kernel' );
 }
 
-$eZFlip = new eZFlip( $contentObjectAttribute );
-$doConvert = true;
-if ( $eZFlip->isConverted() )
+try
 {
-    if ( $reFlip == 2 )
+    $eZFlip = new eZFlip( $contentObjectAttribute );
+    $doConvert = true;
+    if ( $eZFlip->isConverted() )
     {
-        $doConvert = true;
+        if ( $reFlip == 2 )
+        {
+            $doConvert = true;
+        }
+        else
+        {
+            $errors[] = ezpI18n::tr( 'extension/ezflip', 'File already converted' );
+            $doConvert = false;
+        }
     }
-    else
+    
+    if ( $doConvert )
     {
-        $errors[] = ezpI18n::tr( 'extension/ezflip', 'File already converted' );
-        $doConvert = false;
+        $args = serialize( array( $attributeId, $contentObjectVersion ) );
+        
+        $exist = eZPendingActions::fetchObject( eZPendingActions::definition(), null, array( 'param' => $args ) );
+        
+        if ( !$exist )
+        {
+            $pending = new eZPendingActions( array(
+                'action' => 'ezflip_convert',
+                'created' => time(),
+                'param' => 	$args
+            ) );
+            $pending->store();
+            $reFlip = 0;
+        }
+        else
+        {
+            $errors[] = ezpI18n::tr( 'extension/ezflip', 'The file is being processed' );
+            $reFlip = 0;
+        }
     }
-}
 
-if ( $doConvert )
+    $tpl->setVariable( 'reflip', $reFlip );
+    $tpl->setVariable( 'attribute', $contentObjectAttribute );
+    $tpl->setVariable( 'errors', $errors );
+    
+    
+    $Result = array();
+    $Result['content'] = $tpl->fetch( "design:ezflip/enqueue.tpl" );
+}
+catch( RuntimeException $e )
+{    
+    $tpl->setVariable( 'commands', eZFlip::wizard() );
+    $tpl->setVariable( 'error', $e->getMessage() );
+    $tpl->setVariable( 'exception', $e->getTraceAsString() );
+    $Result['content'] = $tpl->fetch( "design:ezflip/wizard.tpl" );
+}
+catch( Exception $e )
 {
-    $args = serialize( array( $attributeId, $contentObjectVersion ) );
-    
-    $exist = eZPendingActions::fetchObject( eZPendingActions::definition(), null, array( 'param' => $args ) );
-    
-    if ( !$exist )
-    {
-        $pending = new eZPendingActions( array(
-            'action' => 'ezflip_convert',
-            'created' => time(),
-            'param' => 	$args
-        ) );
-        $pending->store();
-        $reFlip = 0;
-    }
-    else
-    {
-        $errors[] = ezpI18n::tr( 'extension/ezflip', 'The file is being processed' );
-        $reFlip = 0;
-    }
+    $tpl->setVariable( 'error', $e->getMessage() );
+    $tpl->setVariable( 'exception', $e->getTraceAsString() );
+    $Result['content'] = $tpl->fetch( "design:ezflip/error.tpl" );
 }
-
-$tpl->setVariable( 'reflip', $reFlip );
-$tpl->setVariable( 'attribute', $contentObjectAttribute );
-$tpl->setVariable( 'errors', $errors );
-
-
-$Result = array();
-$Result['content'] = $tpl->fetch( "design:ezflip/enqueue.tpl" );
-
 
 ?>
