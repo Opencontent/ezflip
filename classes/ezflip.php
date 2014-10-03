@@ -13,8 +13,6 @@ class eZFlip
     protected $isConverted;
     protected $flipVarDirectory;
     protected $flipObjectDirectoryName;
-    protected $pdftkExecutable;
-    protected $gsExecutable;
 
     /*
      * eZFlip constructor
@@ -25,8 +23,6 @@ class eZFlip
         $this->SiteINI = eZINI::instance();
         $this->FlipINI = eZINI::instance( 'ezflip.ini' );
 
-        $this->pdftkExecutable = $this->FlipINI->variable( 'HelperSettings', 'PdftkExecutablePath' );
-        $this->gsExecutable = $this->FlipINI->variable( 'HelperSettings', 'GhostscriptExecutablePath' );
         if( $useCli )
         {
             $this->checkDependencies();
@@ -69,19 +65,7 @@ class eZFlip
 
     public function checkDependencies()
     {
-        $command = "{$this->pdftkExecutable} --version";
-        exec( $command, $resultPdftk );
-        if ( empty( $resultPdftk )  )
-        {
-            throw new Exception( 'pdftk not found. Install it from http://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/' );
-        }
-
-        $command = "{$this->gsExecutable} --version";
-        exec( $command, $resultGs );
-        if ( empty( $resultGs ) )
-        {
-            throw new Exception( 'Ghostscript not found.' );
-        }
+        eZFlipPdfHandler::instance()->checkDependencies();
     }
 
     /*
@@ -96,9 +80,11 @@ class eZFlip
         return '../../../../../../../flip/get/' . basename( $varDir ) . '/' . $this->attribute->attribute( 'id' ) . '/' . $this->attribute->attribute( 'version' );
     }
 
-    /*
+    /**
      * Create the object directory in flip var dir
      * Call the eZFlipPdfHandler to split pdf in images in the object flip var dir
+     * @return eZFlip
+     * @throws Exception
      */
     protected  function preparePdf()
     {
@@ -111,7 +97,7 @@ class eZFlip
 
         $storedFile = $this->attribute->storedFileInformation( false, false, false );;
         $storedFilePath = $this->SiteINI->variable( 'FileSettings','VarDir' ) . '/' . $storedFile['filepath'];
-        eZFlipPdfHandler::splitPDFPages( $this->flipObjectDirectory, $storedFilePath, $this->cli );
+        eZFlipPdfHandler::instance()->splitPDFPages( $this->flipObjectDirectory, $storedFilePath );
         $this->readFiles();        
         return $this;
     }
@@ -130,6 +116,10 @@ class eZFlip
         ksort( $this->files );
     }
 
+    /**
+     * @return eZFlip
+     * @throws Exception
+     */
     protected function createImages()
     {
         if ( $this->generateContentObjectImages )
@@ -139,6 +129,7 @@ class eZFlip
         $sizes = $this->FlipINI->variable( 'FlipSettings', 'SizeThumb');
         $sizesOptions = $this->FlipINI->variable( 'FlipSettings', 'SizeThumbOptions');
         
+        $i = 0;
         foreach( $this->files as $file )
         {
             $i++;
@@ -151,7 +142,7 @@ class eZFlip
                 }
 
                 $pageName = self::generatePageFileName( $i, $size );
-                eZFlipPdfHandler::createImageFromPDF( $size, $this->flipObjectDirectory, $file, $pageName, $options, $this->cli );
+                eZFlipPdfHandler::instance()->createImageFromPDF( $size, $this->flipObjectDirectory, $file, $pageName, $options );
 
                 $ratio = getimagesize( $this->flipObjectDirectory . '/' . $pageName );
                 if ( !is_array( $ratio ) )
@@ -187,7 +178,7 @@ class eZFlip
     {
         if ( $suffix === null )
         {
-            $suffix = eZFlipPdfHandler::flipImageSuffix();
+            $suffix = eZFlipPdfHandler::instance()->flipBookPageImageSuffix();
         }
         return "page" . sprintf( "%04d", $index ) . "_" . $size . "." . $suffix;
     }
@@ -302,24 +293,16 @@ class eZFlip
             {
                 $info['header'] = "Content-Type:text/xml";
             } break;
-            
-            case 'image-jpg':
-            case 'jpg':
-            {
-                $info['header'] = 'Content-Type: image/jpeg';
-                $suffix = 'jpg';   
-            } break;
-            
-            case 'image-png':
-            case 'png':
-            {
-                $info['header'] = 'Content-Type: image/png';
-                $suffix = 'png';   
-            } break;
-            
+
             default:
             {
-                throw new Exception( "File format $suffix not handled $fileName" );
+                $data = eZFlipPdfHandler::instance()->flipImageInfo( $fileName );
+                if ( !$data )
+                {
+                    throw new Exception( "File format $suffix not handled $fileName" );
+                }
+                $info['header'] = $data['header'];
+                $suffix = $data['suffix'];
             }
         }
         $info['path'] = $this->flipObjectDirectory . '/'. $fileNameWithoutSuffix . $suffix;
