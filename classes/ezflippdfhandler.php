@@ -2,6 +2,11 @@
 
 class eZFlipPdfHandler
 {
+    public static function flipImageSuffix()
+    {
+        return 'image-jpg';
+    }
+    
     public static function createImageFromPDF ( $size, $filePath, $fileName, $pageName, $options = '', $cli = false )
 	{
         $preConvertCommand = '';

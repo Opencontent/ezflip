@@ -183,8 +183,12 @@ class eZFlip
         }
     }
 
-    public static function generatePageFileName( $index, $size, $suffix = 'jpg' )
+    public static function generatePageFileName( $index, $size, $suffix = null )
     {
+        if ( $suffix === null )
+        {
+            $suffix = eZFlipPdfHandler::flipImageSuffix();
+        }
         return "page" . sprintf( "%04d", $index ) . "_" . $size . "." . $suffix;
     }
 
@@ -285,6 +289,42 @@ class eZFlip
             }
         }
         return false;
+    }
+    
+    public function getFlipFileInfo( $fileName )
+    {
+        $info = array();
+        $suffix = eZFile::suffix( $fileName );
+        $fileNameWithoutSuffix = str_replace( $suffix, '', $fileName );
+        switch ( $suffix )
+        {
+            case 'xml':
+            {
+                $info['header'] = "Content-Type:text/xml";
+            } break;
+            
+            case 'image-jpg':
+            case 'jpg':
+            {
+                $info['header'] = 'Content-Type: image/jpeg';
+                $suffix = 'jpg';   
+            } break;
+            
+            case 'image-png':
+            case 'png':
+            {
+                $info['header'] = 'Content-Type: image/png';
+                $suffix = 'png';   
+            } break;
+            
+            default:
+            {
+                throw new Exception( "File format $suffix not handled $fileName" );
+            }
+        }
+        $info['path'] = $this->flipObjectDirectory . '/'. $fileNameWithoutSuffix . $suffix;
+        $info['content'] = file_get_contents( $info['path'] );
+        return $info;
     }
 }
 
