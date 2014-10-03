@@ -12,7 +12,6 @@ abstract class PdftkBaseHandler implements FlipHandlerInterface
         $suffix = eZFile::suffix( $fileName );
         switch ( $suffix )
         {
-            case 'image-jpg':
             case 'jpg':
             {
                 return array(
@@ -20,13 +19,20 @@ abstract class PdftkBaseHandler implements FlipHandlerInterface
                     'suffix' => 'jpg'
                 );
             }
+            
+            case 'image-jpg':            
+            {
+                return array(
+                    'header' => 'Content-Type: image/jpeg',
+                    'suffix' => $suffix
+                );
+            }
 
-            case 'image-png':
-            case 'png':
+            case 'image-png':            
             {
                 return array(
                     'header' => 'Content-Type: image/png',
-                    'suffix' => 'png'
+                    'suffix' => $suffix
                 );
             }
         }

@@ -10,17 +10,16 @@ class PdftkPpmHandler extends PdftkBaseHandler
     public function checkDependencies()
     {
         parent::checkDependencies();
-
-        $command = "pdfinfo --version";
-        exec( $command, $result );
+        
+        $command = "pdfinfo -v 2>&1";
+        $result = shell_exec( $command );
         if ( empty( $result )  )
         {
             throw new Exception( 'pdfinfo not found' );
         }
-
-        $result = false;
-        $command = "pdftoppm --version";
-        exec( $command, $result );
+        
+        $command = "pdftoppm -v 2>&1";
+        $result = shell_exec( $command );
         if ( empty( $result )  )
         {
             throw new Exception( 'pdftoppm not found' );

@@ -25,7 +25,7 @@ try
 {
     $eZFlip = new eZFlip( $contentObjectAttribute );
     $info = $eZFlip->getFlipFileInfo( $FileName );
-    header ( $info['header'] );    
+    header ( $info['header'] );        
     echo $info['content'];
 }
 catch( Exception $e )
