@@ -2,13 +2,42 @@
 
 interface FlipHandlerInterface
 {
-    function checkDependencies();
+    /**
+     * @param eZContentObjectAttribute $attribute
+     * @param bool $useCli
+     */
+    function __construct( eZContentObjectAttribute $attribute, $useCli );
 
-    function flipBookPageImageSuffix();
+    /**
+     * @return bool
+     */
+    function isConverted();
 
-    function createImageFromPDF ( $size, $filePath, $fileName, $pageName, $options );
+    /**
+     * @param $bookIdentifier
+     * @return array( $width, $height )
+     */
+    function getPageDimensions( $bookIdentifier );
 
-    function splitPDFPages( $directory, $fileName );
+    /**
+     * @return string
+     */
+    function getFlipData();
 
-    function flipImageInfo( $fileName );
+    /**
+     * @param $filename
+     * @return array associative array of header, path, content
+     */
+    function getFlipFileInfo( $filename );
+
+    /**
+     * @return bool
+     */
+    function convert();
+
+
+    /**
+     * @return string
+     */
+    function template();
 }

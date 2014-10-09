@@ -23,8 +23,8 @@ if ( !$contentObjectAttribute->attribute( 'object' )->attribute( 'can_read' ) )
 
 try
 {
-    $eZFlip = new eZFlip( $contentObjectAttribute );
-    $info = $eZFlip->getFlipFileInfo( $FileName );
+    $flip = eZFlip::instance( $contentObjectAttribute );
+    $info = $flip->getFlipFileInfo( $FileName );
     header ( $info['header'] );        
     echo $info['content'];
 }

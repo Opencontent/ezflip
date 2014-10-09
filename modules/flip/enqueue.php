@@ -17,9 +17,9 @@ if ( !$contentObjectAttribute instanceof eZContentObjectAttribute )
 
 try
 {
-    $eZFlip = new eZFlip( $contentObjectAttribute );
+    $flip = eZFlip::instance( $contentObjectAttribute );
     $doConvert = true;
-    if ( $eZFlip->isConverted() )
+    if ( $flip->isConverted() )
     {
         if ( $reFlip == 2 )
         {

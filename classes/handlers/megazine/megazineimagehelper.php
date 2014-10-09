@@ -1,11 +1,16 @@
 <?php
 
-class eZFlipImageHandler
+class FlipMegazineImageHelper
 {
 
-    public static function deleteThumb( $parentNodeId, $cli = false )
+    /**
+     * @param int $parentNodeId
+     * @param eZCLI $cli
+     */
+    public static function deleteThumb( $parentNodeId, $cli = null )
     {
-		$children = eZContentObjectTreeNode::subTreeByNodeID(
+		/** @var eZContentObjectTreeNode[] $children */
+        $children = eZContentObjectTreeNode::subTreeByNodeID(
             array( 'ClassFilterType' => 'include',
                    'ClassFilterArray' => array( 'image' ) ),
             $parentNodeId
@@ -30,6 +35,12 @@ class eZFlipImageHandler
 
     }
 
+    /**
+     * @param string $directory
+     * @param string $imageName
+     * @param string $parentNodeId
+     * @return eZContentObject|false
+     */
     public static function createThumb( $directory, $imageName, $parentNodeId  )
     {
 		$user = eZUser::currentUser();

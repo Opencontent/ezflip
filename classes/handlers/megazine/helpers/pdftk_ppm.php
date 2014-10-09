@@ -1,6 +1,6 @@
 <?php
 
-class PdftkPpmHandler extends PdftkBaseHandler
+class PdftkPpmHelper extends PdftkBaseHelper
 {
     public function flipBookPageImageSuffix()
     {

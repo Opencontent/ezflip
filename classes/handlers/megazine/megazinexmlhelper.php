@@ -1,11 +1,8 @@
 <?php
 
-class eZFlipXmlHandler
+class FlipMegazineXmlHelper
 {
 
-	public function eZFlipXmlHandler(){}
-	
-	
 	public static function openBook ( $options = array() )
 	{
 		$defaultArgs = array(
@@ -44,7 +41,7 @@ class eZFlipXmlHandler
 		$args = array_merge( $defaultArgs, $options );
 
 		$xml = "<page>
-			<img position='" . $args['position'] . "' src='" . $directory . '/' .eZFlip::generatePageFileName( $index, $thumbSize) . "' hires='" . $directory . '/' . eZFlip::generatePageFileName( $index, $fullSize) . "' gallery='" . $args['gallery'] . "'/>
+			<img position='" . $args['position'] . "' src='" . $directory . '/' .FlipMegazine::generatePageFileName( $index, $thumbSize) . "' hires='" . $directory . '/' . FlipMegazine::generatePageFileName( $index, $fullSize) . "' gallery='" . $args['gallery'] . "'/>
 		</page>";
 		
 		return $xml;

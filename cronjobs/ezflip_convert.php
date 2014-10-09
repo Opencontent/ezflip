@@ -24,6 +24,7 @@ try
     do
     {
         eZContentObject::clearCache();
+        /** @var eZPendingActions[] $entries */
         $entries = eZPersistentObject::fetchObjectList( eZPendingActions::definition(),  null, $filterConds, null, array( 'limit' => $limit, 'offset' => $offset ) );
 
         if ( is_array( $entries ) && count( $entries ) != 0 )

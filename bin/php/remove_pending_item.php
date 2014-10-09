@@ -30,6 +30,7 @@ else
 {
     $action = 'ezflip_convert';
     $filterConds = array( 'action' => $action );    
+    /** @var eZPendingActions[] $entries */
     $entries = eZPersistentObject::fetchObjectList( eZPendingActions::definition(),  null, $filterConds, null );
     if ( is_array( $entries ) && count( $entries ) != 0 )
     {

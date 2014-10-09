@@ -1,6 +1,6 @@
 <?php
 
-abstract class PdftkBaseHandler implements FlipHandlerInterface
+abstract class PdftkBaseHelper implements FlipMegazineHelperInterface
 {
     protected static function isCli()
     {
@@ -17,14 +17,6 @@ abstract class PdftkBaseHandler implements FlipHandlerInterface
                 return array(
                     'header' => 'Content-Type: image/jpeg',
                     'suffix' => 'jpg'
-                );
-            }
-            
-            case 'image-jpg':            
-            {
-                return array(
-                    'header' => 'Content-Type: image/jpeg',
-                    'suffix' => $suffix
                 );
             }
 
