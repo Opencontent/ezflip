@@ -181,8 +181,8 @@ class FlipYumpu implements FlipHandlerInterface
     protected function getID( $progressId )
     {
         $connector = new YumpuConnector();
-        $connector->config['token'] =  $this->FlipINI->variable( 'YumpuSettings', 'Token' );
-        $connector->config['debug'] = true;
+        $connector->config['token'] = $this->FlipINI->variable( 'YumpuSettings', 'Token' );
+        $connector->config['debug'] = $this->FlipINI->variable( 'YumpuSettings', 'EnableDebug' );
         $response = $connector->getDocumentProgress( $progressId );
         if ( $response['state'] == 'success' )
         {
@@ -242,7 +242,7 @@ class FlipYumpu implements FlipHandlerInterface
 
         $connector = new YumpuConnector();
         $connector->config['token'] = $this->FlipINI->variable( 'YumpuSettings', 'Token' );
-        $connector->config['debug'] = true;
+        $connector->config['debug'] = $this->FlipINI->variable( 'YumpuSettings', 'EnableDebug' );
         $response = $connector->postDocumentFile( $data );
         if ( $response )
         {
