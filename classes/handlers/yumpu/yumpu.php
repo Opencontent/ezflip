@@ -96,8 +96,15 @@ class FlipYumpu implements FlipHandlerInterface
      */
     function getPageDimensions( $bookIdentifier )
     {
-        eZDebug::writeError( "Yumpu handler can not get single page info", __METHOD__ );
-        return array();
+        if ( isset( $this->flipList[$this->attribute->attribute( 'id' )] ) )
+        {
+            $data = $this->flipList[$this->attribute->attribute( 'id' )];
+            return array( $data['document'][0]['width'], $data['document'][0]['height'] );
+        }
+        else
+        {
+            return array();
+        }
     }
 
     /**
@@ -105,7 +112,36 @@ class FlipYumpu implements FlipHandlerInterface
      */
     function getFlipData()
     {
-        return isset( $this->flipList[$this->attribute->attribute( 'id' )] ) ? $this->flipList[$this->attribute->attribute( 'id' )] : false;
+        if ( isset( $this->flipList[$this->attribute->attribute( 'id' )] ) )
+        {
+            $data = $this->flipList[$this->attribute->attribute( 'id' )];
+
+            //$id = $data['document'][0]['id'];
+            //$connector = new YumpuConnector();
+            //$connector->config['token'] = $this->FlipINI->variable( 'YumpuSettings', 'Token' );
+            //$connector->config['debug'] = true;
+            //$response = $connector->getDocument( array( 'id' => $id ) );
+
+            foreach( $data['document'] as $i => $doc )
+            {
+                if ( isset( $doc['embed_code'] ) )
+                {
+                    $xml = new SimpleXMLElement( $doc['embed_code'] );
+                    foreach( $xml->attributes() as $key => $value )
+                    {
+                        if ( $key == 'src' )
+                        {
+                            $data['document'][$i]['iframe_src'] = (string) $value;
+                        }
+                    }
+                }
+            }
+            return $data;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
@@ -172,8 +208,7 @@ class FlipYumpu implements FlipHandlerInterface
         $filePath = eZSys::rootDir() . '/' . $storedFile['filepath'];
 
         $title = $this->object->attribute( 'name' );
-
-        //$language = $this->object->attribute( 'current_language' ); //@todo trasformare in format iso
+        $language = 'it'; //$this->object->attribute( 'current_language' ); //@todo trasformare in format iso
 
         //$visibility = 'public';
         //$downloadable = 'y';
@@ -183,15 +218,15 @@ class FlipYumpu implements FlipHandlerInterface
             'file' => $filePath,
             'title' => $title,
             //'description' => $description,
-            //'language' => $language,
+            'language' => $language,
             //'tags' => $tags,
-            //'visibility' => $visibility, //premium
-            //'blurred' => $blurred,
             //'page_teaser_image' => null,
             //'page_teaser_page_range' => null,
             //'page_teaser_url' => null,
-            //'downloadable' => $downloadable, // premium
             'detect_elements' => 'y',
+            //'downloadable' => $downloadable, // premium
+            //'visibility' => $visibility, //premium
+            //'blurred' => $blurred, //premium
             //'recommended_magazines' => 'n',  // premium
             //'social_sharing' => 'n',  // premium
             //'player_social_sharing' => 'n',  // premium
