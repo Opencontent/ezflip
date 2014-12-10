@@ -2,15 +2,23 @@
 
 class PublicPrivatePremiumFlipYumpu extends FlipYumpu
 {
-    function versions( $version = null )
+    protected function versions( $version = null )
     {
-        $urlData = parse_url( eZINI::instance()->variable( 'SiteSettings', 'SiteURL' ) );
-        
-        if ( !$urlData )
+        $domains = '';
+        if ( $this->FlipINI->hasVariable( 'PublicPrivatePremiumFlipYumpuSettings', 'ProtectDomains' ) )
         {
-            throw new Exception( "Problem parsing 'SiteSettings/SiteUrl' " . eZINI::instance()->variable( 'SiteSettings', 'SiteURL' ) );
+            $domains = implode( ',', $this->FlipINI->variable( 'PublicPrivatePremiumFlipYumpuSettings', 'ProtectDomains' ) );
         }
-        $domains = $urlData['path'];
+        
+        if ( empty( $domains ) )
+        {
+            $urlData = parse_url( eZINI::instance()->variable( 'SiteSettings', 'SiteURL' ) );        
+            if ( !$urlData )
+            {
+                throw new Exception( "Problem parsing 'SiteSettings/SiteUrl' " . eZINI::instance()->variable( 'SiteSettings', 'SiteURL' ) );
+            }
+            $domains = $urlData['path'];
+        }
         
         $versions = array(
             'public' => array(
@@ -61,6 +69,23 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
         return $versions;
     }
     
+    function getPageDimensions( $bookIdentifier )
+    {
+        if ( !in_array( $bookIdentifier, array_keys( $this->versions() ) ) )
+        {
+            $bookIdentifier = 'public';
+        }
+        if ( isset( $this->flipList[$this->attribute->attribute( 'id' )][$bookIdentifier] ) )
+        {
+            $data = $this->flipList[$this->attribute->attribute( 'id' )][$bookIdentifier];
+            return array( $data['document'][0]['width'], $data['document'][0]['height'] );
+        }
+        else
+        {
+            return array();
+        }
+    }
+    
     function getFlipData()
     {
         if ( isset( $this->flipList[$this->attribute->attribute( 'id' )] ) )
@@ -83,13 +108,7 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
                     {
                         $data['versions'][] = $yumpuVersion;
                         foreach( $data[$yumpuVersion]['document'] as $i => $doc )
-                        {
-                            //$id = $data['document'][0]['id'];
-                            //$connector = new YumpuConnector();
-                            //$connector->config['token'] = $this->FlipINI->variable( 'YumpuSettings', 'Token' );
-                            //$connector->config['debug'] = true;
-                            //$response = $connector->getDocument( array( 'id' => $id ) );
-                            
+                        {                            
                             if ( isset( $doc['embed_code'] ) )
                             {
                                 $xml = new SimpleXMLElement( $doc['embed_code'] );
@@ -232,7 +251,7 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
     
             $title = $this->object->attribute( 'name' );
             $currentLanguageParts = explode( '-', eZLocale::instance( $this->object->attribute( 'current_language' ) )->attribute( 'http_locale_code' ) );
-            $language = strtolower( $currentLanguageParts[0] ); //@todo trasformare in format iso
+            $language = strtolower( $currentLanguageParts[0] );
             if ( !$language )
             {
                 throw new Exception( "Language not found" );
@@ -240,17 +259,17 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
     
             $dataMap = $this->object->attribute( 'data_map' );
             $description = $tags = $blurredPages = false;
-            if ( $this->FlipINI->hasVariable( 'FlipBookSettings', 'DescriptionAttributeIdentifier' ) && isset( $dataMap[$this->FlipINI->variable( 'FlipBookSettings', 'DescriptionAttributeIdentifier' )] ))
+            if ( $this->FlipINI->hasVariable( 'YumpuSettings', 'DescriptionAttributeIdentifier' ) && isset( $dataMap[$this->FlipINI->variable( 'YumpuSettings', 'DescriptionAttributeIdentifier' )] ))
             {
-                $attribute = $dataMap[$this->FlipINI->variable( 'FlipBookSettings', 'DescriptionAttributeIdentifier' )];
+                $attribute = $dataMap[$this->FlipINI->variable( 'YumpuSettings', 'DescriptionAttributeIdentifier' )];
                 if ( $attribute->attribute( 'has_content' ) )
                 {
                     $description = strip_tags( $attribute->toString() );
                 }
             }
-            if ( $this->FlipINI->hasVariable( 'FlipBookSettings', 'TagAttributeIdentifier' ) && isset( $dataMap[$this->FlipINI->variable( 'FlipBookSettings', 'TagAttributeIdentifier' )] ))
+            if ( $this->FlipINI->hasVariable( 'YumpuSettings', 'TagAttributeIdentifier' ) && isset( $dataMap[$this->FlipINI->variable( 'YumpuSettings', 'TagAttributeIdentifier' )] ))
             {
-                $attribute = $dataMap[$this->FlipINI->variable( 'FlipBookSettings', 'TagAttributeIdentifier' )];
+                $attribute = $dataMap[$this->FlipINI->variable( 'YumpuSettings', 'TagAttributeIdentifier' )];
                 if ( $attribute->attribute( 'has_content' ) )
                 {
                     $tags = strip_tags( $attribute->toString() );
@@ -258,9 +277,9 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
             }
             
             $blurredPages = '1-'; //all pages
-            if ( $this->FlipINI->hasVariable( 'FlipBookSettings', 'BlurpagesAttributeIdentifier' ) && isset( $dataMap[$this->FlipINI->variable( 'FlipBookSettings', 'BlurpagesAttributeIdentifier' )] ))
+            if ( $this->FlipINI->hasVariable( 'PublicPrivatePremiumFlipYumpuSettings', 'BlurpagesAttributeIdentifier' ) && isset( $dataMap[$this->FlipINI->variable( 'PublicPrivatePremiumFlipYumpuSettings', 'BlurpagesAttributeIdentifier' )] ))
             {
-                $attribute = $dataMap[$this->FlipINI->variable( 'FlipBookSettings', 'BlurpagesAttributeIdentifier' )];
+                $attribute = $dataMap[$this->FlipINI->variable( 'PublicPrivatePremiumFlipYumpuSettings', 'BlurpagesAttributeIdentifier' )];
                 if ( $attribute->attribute( 'has_content' ) )
                 {
                     $blurredPages = $attribute->toString();

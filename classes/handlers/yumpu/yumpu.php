@@ -214,37 +214,41 @@ class FlipYumpu implements FlipHandlerInterface
         $filePath = eZSys::rootDir() . '/' . $storedFile['filepath'];
 
         $title = $this->object->attribute( 'name' );
-        $language = 'it'; //$this->object->attribute( 'current_language' ); //@todo trasformare in format iso
+        
+        $currentLanguageParts = explode( '-', eZLocale::instance( $this->object->attribute( 'current_language' ) )->attribute( 'http_locale_code' ) );
+        $language = strtolower( $currentLanguageParts[0] );
+        if ( !$language )
+        {
+            throw new Exception( "Language not found" );
+        }
 
-        //$visibility = 'public';
-        //$downloadable = 'y';
-        //$enableZoom = 'y';
+        $description = $tags = false;
+        if ( $this->FlipINI->hasVariable( 'YumpuSettings', 'DescriptionAttributeIdentifier' ) && isset( $dataMap[$this->FlipINI->variable( 'YumpuSettings', 'DescriptionAttributeIdentifier' )] ))
+        {
+            $attribute = $dataMap[$this->FlipINI->variable( 'YumpuSettings', 'DescriptionAttributeIdentifier' )];
+            if ( $attribute->attribute( 'has_content' ) )
+            {
+                $description = strip_tags( $attribute->toString() );
+            }
+        }
+        if ( $this->FlipINI->hasVariable( 'YumpuSettings', 'TagAttributeIdentifier' ) && isset( $dataMap[$this->FlipINI->variable( 'YumpuSettings', 'TagAttributeIdentifier' )] ))
+        {
+            $attribute = $dataMap[$this->FlipINI->variable( 'YumpuSettings', 'TagAttributeIdentifier' )];
+            if ( $attribute->attribute( 'has_content' ) )
+            {
+                $tags = strip_tags( $attribute->toString() );
+            }
+        }
 
         $data = array(
             'file' => $filePath,
-            'title' => $title,
-            //'description' => $description,
-            'language' => $language,
-            //'tags' => $tags,
-            //'page_teaser_image' => null,
-            //'page_teaser_page_range' => null,
-            //'page_teaser_url' => null,
-            'detect_elements' => 'y',
-            //'downloadable' => $downloadable, // premium
-            //'visibility' => $visibility, //premium
-            //'blurred' => $blurred, //premium
-            //'recommended_magazines' => 'n',  // premium
-            //'social_sharing' => 'n',  // premium
-            //'player_social_sharing' => 'n',  // premium
-            //'player_download_pdf' => 'n', // premium
-            //'player_print_page' => 'n',  // premium
-            //'player_branding' => 'n',  // premium
-            //'player_sidebar' => 'n',  // premium
-            //'player_html5_c2r' => $enableZoom,  // premium
-            //'player_outer_shadow' => 'y',  // premium
-            //'player_inner_shadow' => 'y',  // premium
-            //'player_ga' => $playerGa
+            'title' => $title,            
+            'language' => $language,            
+            'detect_elements' => 'y',            
         );
+        
+        if ( $description ) $data['description'] = $description;            
+        if ( $tags ) $data['tags'] = $tags;
 
         $connector = new YumpuConnector();
         $connector->config['token'] = $this->FlipINI->variable( 'YumpuSettings', 'Token' );
