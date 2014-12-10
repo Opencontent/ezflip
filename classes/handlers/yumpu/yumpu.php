@@ -155,8 +155,7 @@ class FlipYumpu implements FlipHandlerInterface
     }
 
     /**
-     * @return bool
-     * @throws Exception
+     * @return void     
      */
     function convert()
     {
@@ -188,18 +187,25 @@ class FlipYumpu implements FlipHandlerInterface
         {
             $this->flipList[$this->attribute->attribute( 'id' )] = $response;
             $this->updateFlipList();
+            eZContentCacheManager::clearObjectViewCache( $this->attribute->attribute( 'contentobject_id' ) );
         }
         else
         {
-            throw new Exception( "Conversion in progress" );
+            throw new RuntimeException( "Conversion in progress" );
         }
     }
 
     protected function updateFile( $fileData )
     {
-        //@todo
-        eZDebug::writeNotice( $fileData, __METHOD__ );
-        return false;
+        $connector = new YumpuConnector();
+        $connector->config['token'] = $this->FlipINI->variable( 'YumpuSettings', 'Token' );
+        $connector->config['debug'] = $this->FlipINI->variable( 'YumpuSettings', 'EnableDebug' );
+        $response = $connector->deleteDocument( $fileData['id'] );
+        if ( $response['state'] != 'success' )
+        {
+            throw new Exception( "Error deleting {$fileData['id']}" );
+        }
+        $this->createFile();
     }
 
     protected function createFile()
@@ -250,7 +256,7 @@ class FlipYumpu implements FlipHandlerInterface
             {
                 $this->flipList[$this->attribute->attribute( 'id' )] = $response['progress_id'];
                 $this->updateFlipList();
-                throw new Exception( "Waiting for remote conversion" );
+                throw new RuntimeException( "Waiting for remote conversion" );
             }
             else
             {
