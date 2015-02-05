@@ -2,6 +2,10 @@
 
 class PublicPrivatePremiumFlipYumpu extends FlipYumpu
 {
+    protected $cli;
+
+    protected $objectName;
+    
     protected function versions( $version = null )
     {
         $domains = '';
@@ -134,36 +138,44 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
     
     function convert()
     {
+        $this->cli = eZCLI::instance();
+        $this->objectName = $this->attribute->attribute( 'object' )->attribute( 'name' );
         if ( isset( $this->flipList[$this->attribute->attribute( 'id' )] ) )
         {
             $infos = array();
-            $data = $this->flipList[$this->attribute->attribute( 'id' )];
+            $data = $this->flipList[$this->attribute->attribute( 'id' )];            
             foreach( array_keys( $this->versions() ) as $yumpuVersion )
             {
                 if ( isset( $data[$yumpuVersion] ) )
                 {
-                    $dataVersion = $data[$yumpuVersion];
+                    $dataVersion = $data[$yumpuVersion];                    
                     if ( is_string( $dataVersion ) )
                     {
-                        $response = $this->getID( $dataVersion );
-                        if ( $response )
+                        if ( !$this->cli->isWebOutput() && !$this->cli->isQuiet() )
+                            $this->cli->output( "Try to get magazine {$dataVersion} id" );
+                            
+                        try
                         {
-                            $this->flipList[$this->attribute->attribute( 'id' )][$yumpuVersion] = $response;
-                            $this->updateFlipList();
-                            eZContentCacheManager::clearObjectViewCache( $this->attribute->attribute( 'contentobject_id' ) );
-                        }
-                        else
+                            $response = $this->getID( $dataVersion );
+                            if ( $response )
+                            {
+                                $this->flipList[$this->attribute->attribute( 'id' )][$yumpuVersion] = $response;
+                                $this->updateFlipList();
+                                eZContentCacheManager::clearObjectViewCache( $this->attribute->attribute( 'contentobject_id' ) );
+                            }
+                        }                        
+                        catch ( Exception $e )
                         {
-                            $infos[] = "[$yumpuVersion] Conversion in progress";
+                            $infos[] = "[{$this->objectName}@{$yumpuVersion}] {$e->getMessage()}";
                         }
                     }
                     else
                     {                        
-                        $infos[] = "[$yumpuVersion] " . $this->updateFile( $yumpuVersion );
-                    }
+                        $infos[] = "[{$this->objectName}@{$yumpuVersion}] " . $this->updateFile( $yumpuVersion );
+                    }                    
                 }
                 else
-                {
+                {                    
                     $infos[] = $this->pushData( $yumpuVersion, $this->buildFileData( $yumpuVersion ) );
                 }
             }
@@ -178,7 +190,7 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
             foreach( array_keys( $this->versions() ) as $yumpuVersion )
             {             
                 $info = $this->pushData( $yumpuVersion, $this->buildFileData( $yumpuVersion ) );
-                $infoString .= "[$yumpuVersion] $info \n"; 
+                $infoString .= "[{$this->objectName}@{$yumpuVersion}] $info \n"; 
             }
             throw new RuntimeException( $infoString );
         }
@@ -189,12 +201,20 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
         $connector = new YumpuConnector();
         $connector->config['token'] = $this->FlipINI->variable( 'YumpuSettings', 'Token' );
         $connector->config['debug'] = $this->FlipINI->variable( 'YumpuSettings', 'EnableDebug' );
+        
+        if ( !$this->cli->isWebOutput() && !$this->cli->isQuiet() )
+            $this->cli->output( "Try to get magazine by progress id {$progressId}" );
+        
         $response = $connector->getDocumentProgress( $progressId );
-        if ( $response['state'] == 'success' )
+        if ( $response['state'] == 'success' && isset( $response['document'][0]['id'] ) )
         {
             return $response;
         }
-        return false;
+        if ( isset( $response['document']['message'] ) )
+        {
+            throw new Exception( $response['document']['message'] );
+        }
+        throw new Exception( "Conversion in progress" );
     }
 
     protected function updateFile( $yumpuVersion )
@@ -205,10 +225,26 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
             $connector = new YumpuConnector();
             $connector->config['token'] = $this->FlipINI->variable( 'YumpuSettings', 'Token' );
             $connector->config['debug'] = $this->FlipINI->variable( 'YumpuSettings', 'EnableDebug' );
-            $response = $connector->deleteDocument( $id );
-            if ( $response['state'] != 'success' )
+            try
             {
-                throw new Exception( "Error deleting $id" );
+                if ( !$this->cli->isWebOutput() && !$this->cli->isQuiet() )
+                    $this->cli->output( "Try to delete magazine id {$id}" );
+                    
+                $response = $connector->deleteDocument( $id );
+                if ( $response['state'] != 'success' )
+                {
+                    if ( isset( $response['document']['message'] ) )
+                    {
+                        throw new Exception( $response['document']['message'] );
+                    }
+                }
+            }
+            catch( Exception $e )
+            {
+                $message = "Error deleting yumpu #{$id} for object {$this->objectName}: {$e->getMessage()}";                
+                //throw new Exception( $message );
+                if ( !$this->cli->isWebOutput() && !$this->cli->isQuiet() )
+                    $this->cli->output( $message );
             }
         }
 
@@ -221,6 +257,10 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
         $connector = new YumpuConnector();
         $connector->config['token'] = $this->FlipINI->variable( 'YumpuSettings', 'Token' );
         $connector->config['debug'] = $this->FlipINI->variable( 'YumpuSettings', 'EnableDebug' );
+        
+        if ( !$this->cli->isWebOutput() && !$this->cli->isQuiet() )
+            $this->cli->output( "Post magazine {$this->objectName} ", false );
+        
         $response = $connector->postDocumentFile( $data );
         if ( $response )
         {
@@ -239,6 +279,10 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
         {
             $info =  "Conversion failed" ;
         }
+        
+        if ( !$this->cli->isWebOutput() && !$this->cli->isQuiet() )
+            $this->cli->output( $info );
+        
         return $info;
     }
 
@@ -317,5 +361,20 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
     function template()
     {
         return 'design:ezflip/public_private_yumpu.tpl';
+    }
+    
+    public function addManual( $publicId, $privateId )
+    {
+        $connector = new YumpuConnector();
+        $connector->config['token'] = $this->FlipINI->variable( 'YumpuSettings', 'Token' );
+        $connector->config['debug'] = $this->FlipINI->variable( 'YumpuSettings', 'EnableDebug' );
+        
+        $public = $connector->getDocument( array( 'id' => $publicId ) );
+        $private = $connector->getDocument( array( 'id' => $privateId ) );
+        
+        $this->flipList[$this->attribute->attribute( 'id' )]['public'] = $public;
+        $this->flipList[$this->attribute->attribute( 'id' )]['private'] = $private;
+        $this->updateFlipList();
+        eZContentCacheManager::clearObjectViewCache( $this->attribute->attribute( 'contentobject_id' ) );
     }
 }

@@ -39,7 +39,7 @@ do
             }
             catch( Exception $e )
             {
-                $cli->error( $e->getMessage() );
+                $cli->error( $e->getMessage() );                
             }
         }
     }
