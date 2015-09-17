@@ -60,7 +60,7 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
                 'player_print_page' => 'n',  
                 'player_branding' => 'n',  
                 'player_sidebar' => 'n',  
-                'player_html5_c2r' => 'y',  
+                'player_html5_c2r' => 'n',  
                 'player_outer_shadow' => 'y',  
                 'player_inner_shadow' => 'y',  
                 //'player_ga' => ''
@@ -136,6 +136,17 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
         }
     }
     
+    function removeFlipData()
+    {
+        if ( isset( $this->flipList[$this->attribute->attribute( 'id' )] ) )
+        {
+            unset( $this->flipList[$this->attribute->attribute( 'id' )] );
+            $this->updateFlipList();
+            return true;
+        }
+        return false;
+    }
+    
     function convert()
     {
         $this->cli = eZCLI::instance();
@@ -202,7 +213,7 @@ class PublicPrivatePremiumFlipYumpu extends FlipYumpu
         $connector->config['token'] = $this->FlipINI->variable( 'YumpuSettings', 'Token' );
         $connector->config['debug'] = $this->FlipINI->variable( 'YumpuSettings', 'EnableDebug' );
         
-        if ( !$this->cli->isWebOutput() && !$this->cli->isQuiet() )
+        if ( $this->cli instanceof eZCLI && !$this->cli->isWebOutput() && !$this->cli->isQuiet() )
             $this->cli->output( "Try to get magazine by progress id {$progressId}" );
         
         $response = $connector->getDocumentProgress( $progressId );

@@ -22,16 +22,16 @@ $script->setUseDebugAccumulators( true );
 $user = eZUser::fetchByName( 'admin' );
 eZUser::setCurrentlyLoggedInUser( $user , $user->attribute( 'contentobject_id' ) );
 
+$action = 'ezflip_convert';
+$filterConds = array( 'action' => $action );    
+/** @var eZPendingActions[] $entries */
+$entries = eZPersistentObject::fetchObjectList( eZPendingActions::definition(),  null, $filterConds, null );
 if ( empty( $options['attribute-id'] ) )
 {
-    $cli->error( "Specify option 'attribute-id'" );
+    print_r( $entries );
 }
 else
 {
-    $action = 'ezflip_convert';
-    $filterConds = array( 'action' => $action );    
-    /** @var eZPendingActions[] $entries */
-    $entries = eZPersistentObject::fetchObjectList( eZPendingActions::definition(),  null, $filterConds, null );
     if ( is_array( $entries ) && count( $entries ) != 0 )
     {
         foreach ( $entries as $entry )
