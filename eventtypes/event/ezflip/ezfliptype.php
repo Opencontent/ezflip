@@ -38,7 +38,7 @@ class eZFlipType extends eZWorkflowEventType
                     
                     try
                     {
-                        $flip = new eZFlip( $attribute );
+                        $flip = eZFlip::instance($attribute);
                         if ( !$exist && !$flip->isConverted() ) 
                         {
                             sleep(1); //rallento lo script sennò il time non mi permette di inserire  contenuti
