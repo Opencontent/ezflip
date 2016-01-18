@@ -36,23 +36,19 @@ class eZFlipType extends eZWorkflowEventType
                     $args = array( $attribute_id, $contentobject_version, $object_id, $node_id  );    
                     $exist = eZPendingActions::fetchObject( eZPendingActions::definition(), null, array( 'param' => serialize( $args ) ) );
                     
-                    try
+                    if ( !$exist && !ezFlip::has_converted( $object_id ) ) 
                     {
-                        $flip = eZFlip::instance($attribute);
-                        if ( !$exist && !$flip->isConverted() ) 
-                        {
-                            sleep(1); //rallento lo script sennò il time non mi permette di inserire  contenuti
-                            $pending = new eZPendingActions( array(
-                                'action' => 'ezflip_convert',
-                                'created' => time(),
-                                'param' => 	serialize( $args )
-                            ) );
-                            $pending->store();
-                        }                        
+                        sleep(1); //rallento lo script sennò il time non mi permette di inserire  contenuti
+                        $pending = new eZPendingActions( array(
+                            'action' => 'ezflip_convert',
+                            'created' => time(),
+                            'param' => 	serialize( $args )
+                        ) );
+                        $pending->store();
                     }
-                    catch( Exception $e )
+                    else
                     {
-                        eZDebug::writeError( $e->getMessage(), __METHOD__ );
+                        eZDebug::writeNotice( 'File enqueued or just converted', __METHOD__ );
                     }
                 }
             }

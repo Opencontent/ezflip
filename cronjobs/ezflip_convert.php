@@ -1,7 +1,9 @@
 <?php
 
-$cli->setIsQuiet( $isQuiet );
-$cli->output( "Starting processing ezflip convert" );
+if ( !$isQuiet )
+{
+    $cli->output( "Starting processing ezflip convert" );
+}
 
 $contentObjects = array();
 $db = eZDB::instance();
@@ -19,28 +21,22 @@ $script->resetIteration( $count );
 
 do
 {
-    eZContentObject::clearCache();
-    /** @var eZPendingActions[] $entries */
-    $entries = eZPersistentObject::fetchObjectList( eZPendingActions::definition(),  null, $filterConds, null, array( 'limit' => $limit, 'offset' => $offset ) );
+	eZContentObject::clearCache();
+	
+	$entries = eZPersistentObject::fetchObjectList( eZPendingActions::definition(),  null, $filterConds, null, array( 'limit' => $limit, 'offset' => $offset ) );
 
     if ( is_array( $entries ) && count( $entries ) != 0 )
     {
+
         foreach ( $entries as $entry )
         {
             $args = unserialize( $entry->attribute( 'param' ) );
-            try
+            $return = ezFlip::convert( $args, $cli );
+            if ( !is_bool( $return ) )
             {
-                eZFlip::convert( $args, $cli );
-                $entry->remove();
-            }                
-            catch( RuntimeException $e )
-            {
-                $cli->output( $e->getMessage() );
+                $cli->output( implode( $return['errors'], ', ' ) );
             }
-            catch( Exception $e )
-            {
-                $cli->error( $e->getMessage() );                
-            }
+            $entry->remove();
         }
     }
     $limit['offset'] += $length;

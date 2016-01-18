@@ -1,0 +1,14 @@
+ISTRUZIONI PER L'USO
+
+per attivare ezflip serve
+
+* generare link simbolico allo storage.
+
+di fatto, basta generare una dir con i permessi giusti:
+
+mkdir extension/ezflip/design/standard/flash/megazine
+
+il link simbolico presente in:
+ezflip/design/standard/flash/megazine
+
+dovrebbe attivarsi.

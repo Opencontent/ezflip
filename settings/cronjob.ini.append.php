@@ -10,4 +10,7 @@ Scripts[]=ezflip_convert.php
 Scripts[]=ezflip_convert_all.php
 #Scripts[]=ezflip_convert.php
 
+[CronjobPart-ezflip_reconvert]
+Scripts[]=ezflip_reconvert.php
+
 */ ?>

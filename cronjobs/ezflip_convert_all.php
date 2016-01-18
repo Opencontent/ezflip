@@ -58,7 +58,7 @@ do
                 $object_id = $object->attribute( 'id' );
                 $node_id = $object->attribute( 'main_node_id' );
                 
-                $args = array( $attribute_id, $contentobject_version  );
+                $args = array( $attribute_id, $contentobject_version, $object_id, $node_id  );    
                 $exist = eZPendingActions::fetchObject( eZPendingActions::definition(), null, array( 'param' => serialize( $args ) ) );
                 
                 if ( !$exist )

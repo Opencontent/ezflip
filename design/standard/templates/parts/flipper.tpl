@@ -1,1 +1,0 @@
-{include uri=flip_template( $id, $version )}

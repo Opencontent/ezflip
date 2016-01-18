@@ -5,69 +5,88 @@ $module = $Params["Module"];
 $tpl = eZTemplate::factory();
 $errors = array();
 
-$attributeId = (int) $Params['ContentObjectAttributeID'];
-$contentObjectVersion = (int) $Params['ContentObjectVersion'];
-$reFlip = isset( $Params['ReFlip'] ) ? intval( $Params['ReFlip'] ) : 0;
+$attribute_id = $Params['AttributeID'];
+$contentobject_version = $Params['ContentobjectVersion'];
+$object_id = $Params['ObjectID'];
+$node_id = $Params['NodeID'];
+$reflip = isset( $Params['Reflip'] ) ? intval( $Params['Reflip'] ) : 0;
 
-$contentObjectAttribute = eZContentObjectAttribute::fetch( $attributeId, $contentObjectVersion );
-if ( !$contentObjectAttribute instanceof eZContentObjectAttribute )
-{
-    return $module->handleError( eZError::KERNEL_NOT_FOUND, 'kernel' );
+$node = eZContentObjectTreeNode::fetch( $node_id );
+if ( !$node instanceof eZContentObjectTreeNode )
+{		
+    return $module->handleError( eZError::KERNEL_NOT_FOUND, 'kernel' );	
 }
 
-try
+$contentobjectAttribute = eZContentObjectAttribute::fetch( $attribute_id, $contentobject_version );
+if ( !$contentobjectAttribute instanceof eZContentObjectAttribute )
+{		
+    return $module->handleError( eZError::KERNEL_NOT_FOUND, 'kernel' );	
+}
+
+$do_convert = true;
+if ( ezFlip::has_converted( $object_id ) )
 {
-    $flip = eZFlip::instance( $contentObjectAttribute );
-    $doConvert = true;
-    if ( $flip->isConverted() )
+    if ( $reflip == 2 )
     {
-        if ( $reFlip == 2 )
-        {
-            $doConvert = true;
-        }
-        else
-        {
-            $errors[] = ezpI18n::tr( 'extension/ezflip', 'File already converted' );
-            $doConvert = false;
-        }
+        $do_convert = true;
     }
-    
-    if ( $doConvert )
+    else
     {
-        $args = serialize( array( $attributeId, $contentObjectVersion ) );
-        
-        $exist = eZPendingActions::fetchObject( eZPendingActions::definition(), null, array( 'param' => $args ) );
-        
-        if ( !$exist )
-        {
-            $pending = new eZPendingActions( array(
-                'action' => 'ezflip_convert',
-                'created' => time(),
-                'param' => 	$args
-            ) );
-            $pending->store();
-            $reFlip = 0;
-        }
-        else
-        {
-            $errors[] = ezpI18n::tr( 'extension/ezflip', 'The file is being processed' );
-            $reFlip = 0;
-        }
+        $errors[] = 'Il file &egrave; gi&agrave; stato convertito';
+        $do_convert = false;
     }
+}
 
-    $tpl->setVariable( 'reflip', $reFlip );
-    $tpl->setVariable( 'attribute', $contentObjectAttribute );
-    $tpl->setVariable( 'errors', $errors );
-    
-    
-    $Result = array();
-    $Result['content'] = $tpl->fetch( "design:ezflip/enqueue.tpl" );
-}
-catch( Exception $e )
+if ( $do_convert )
 {
-    $tpl->setVariable( 'error', $e->getMessage() );
-    $tpl->setVariable( 'exception', $e->getTraceAsString() );
-    $Result['content'] = $tpl->fetch( "design:ezflip/error.tpl" );
+    $args = array( $attribute_id, $contentobject_version, $object_id, $node_id  );
+    
+    $exist = eZPendingActions::fetchObject( eZPendingActions::definition(), null, array( 'param' => serialize( $args ) ) );
+    
+    if ( !$exist )
+    {
+        $pending = new eZPendingActions( array(
+            'action' => 'ezflip_convert',
+            'created' => time(),
+            'param' => 	serialize( $args )
+        ) );
+        $pending->store();
+        $reflip = 0;
+    }
+    else
+    {
+        $errors[] = 'Il file &egrave; in elaborazione';
+        $reflip = 0;
+    }
 }
+
+$tpl->setVariable( 'reflip', $reflip );
+$tpl->setVariable( 'attribute', $contentobjectAttribute );
+$tpl->setVariable( 'node', $node );
+
+$tpl->setVariable( 'attribute_id', $attribute_id );
+$tpl->setVariable( 'contentobject_version', $contentobject_version );
+$tpl->setVariable( 'object_id', $object_id );
+$tpl->setVariable( 'node_id', $node_id );
+
+$tpl->setVariable( 'errors', $errors );
+
+/*
+if ( isset( $args[3] ) )
+			$ret['node_id'] = $args[3];
+			
+		if ( isset( $args[2] ) )
+			$ret['object_id'] = $args[2];
+			
+		if ( isset( $args[1] ) )
+			$ret['contentobject_version'] = $args[1];
+			
+		if ( isset( $args[0] ) )
+			$ret['attribute_id'] = $args[0];
+*/
+
+$Result = array();
+$Result['content'] = $tpl->fetch( "design:ezflip/enqueue.tpl" );
+
 
 ?>
