@@ -53,6 +53,11 @@ class FlipMegazine implements FlipHandlerInterface
     protected $flipObjectDirectoryName;
 
     /**
+     * @var FlipMegazineHelperInterface
+     */
+    protected $pdfHelper;
+
+    /**
      * @param eZContentObjectAttribute $attribute
      * @param bool $useCli
      * @throws Exception
@@ -102,9 +107,17 @@ class FlipMegazine implements FlipHandlerInterface
         return $this;
     }
 
+    protected function getPdfHelper()
+    {
+        if ( $this->pdfHelper === null )
+            $this->pdfHelper = FlipMegazinePdfHelper::instance();
+
+        return $this->pdfHelper;
+    }
+
     public function checkDependencies()
     {
-        FlipMegazinePdfHelper::instance()->checkDependencies();
+        $this->getPdfHelper()->checkDependencies();
     }
 
     /**
@@ -145,7 +158,7 @@ class FlipMegazine implements FlipHandlerInterface
 
         $storedFile = $this->attribute->storedFileInformation( false, false, false );
         $storedFilePath = $this->SiteINI->variable( 'FileSettings','VarDir' ) . '/' . $storedFile['filepath'];
-        FlipMegazinePdfHelper::instance()->splitPDFPages( $this->flipObjectDirectory, $storedFilePath );
+        $this->getPdfHelper()->splitPDFPages( $this->flipObjectDirectory, $storedFilePath );
         $this->readFiles();        
         return $this;
     }
@@ -174,7 +187,7 @@ class FlipMegazine implements FlipHandlerInterface
         {
             FlipMegazineImageHelper::deleteThumb( $this->attribute->attribute( 'object' )->attribute( 'main_node_id' ), $this->cli );
         }
-        $sizes = $this->FlipINI->variable( 'FlipSettings', 'SizeThumb');
+        $sizes = (array)$this->FlipINI->variable( 'FlipSettings', 'SizeThumb');
         $sizesOptions = $this->FlipINI->variable( 'FlipSettings', 'SizeThumbOptions');
         
         $i = 0;
@@ -190,7 +203,7 @@ class FlipMegazine implements FlipHandlerInterface
                 }
 
                 $pageName = self::generatePageFileName( $i, $size );
-                FlipMegazinePdfHelper::instance()->createImageFromPDF( $size, $this->flipObjectDirectory, $file, $pageName, $options );
+                $this->getPdfHelper()->createImageFromPDF( $size, $this->flipObjectDirectory, $file, $pageName, $options );
 
                 $ratio = getimagesize( $this->flipObjectDirectory . '/' . $pageName );
                 if ( !is_array( $ratio ) )
@@ -282,7 +295,7 @@ class FlipMegazine implements FlipHandlerInterface
      */
     public function isConverted()
     {
-		$books = $this->FlipINI->variable( 'FlipBookSettings', 'FlipBook');
+		$books = (array)$this->FlipINI->variable( 'FlipBookSettings', 'FlipBook');
 		foreach ( $books as $book )
         {
             $file = eZClusterFileHandler::instance( $this->flipObjectDirectory . "/magazine_" . $book . ".xml" );
@@ -291,7 +304,7 @@ class FlipMegazine implements FlipHandlerInterface
                 return true;
             }
         }
-        eZDebug::writeNotice( 'File ' . $this->flipObjectDirectory . "/magazine_" . $book . ".xml" . ' not found' );
+        eZDebug::writeNotice( 'File ' . $this->flipObjectDirectory . "/magazine_" . implode('|',$books) . ".xml" . ' not found' );
         return false;
 
     }
@@ -305,7 +318,7 @@ class FlipMegazine implements FlipHandlerInterface
      */
     public function getPageDimensions( $bookName )
     {
-		$books = $this->FlipINI->variable( 'FlipBookSettings', 'FlipBook');
+		$books = (array)$this->FlipINI->variable( 'FlipBookSettings', 'FlipBook');
 		foreach ( $books as $book )
         {
             if ( $book == $bookName )
@@ -337,7 +350,7 @@ class FlipMegazine implements FlipHandlerInterface
 
             default:
             {
-                $data = FlipMegazinePdfHelper::instance()->flipImageInfo( $fileName );
+                $data = $this->getPdfHelper()->flipImageInfo( $fileName );
                 if ( !$data )
                 {
                     throw new Exception( "File format $suffix not handled $fileName" );
