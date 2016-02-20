@@ -12,6 +12,7 @@ abstract class PdftkBaseHelper implements FlipMegazineHelperInterface
         $suffix = eZFile::suffix( $fileName );
         switch ( $suffix )
         {
+            case 'jpg_':
             case 'jpg':
             {
                 return array(
