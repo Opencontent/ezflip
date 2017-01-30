@@ -57,7 +57,7 @@ class eZFlipXmlHandler
         */
 
 		$xml = "<page>
-			<img position='" . $args['position'] . "' src='" . $args['srcpath'] . $object_id . "/page" . sprintf("%04d", $index) .  "_" . $thumb .".jpg' hires='" . $args['srcpath'] . $object_id . "/page" . sprintf("%04d", $index) .  "_" . $full .".jpg' gallery='" . $args['gallery'] . "'/>
+			<img position='" . $args['position'] . "' src='" . $args['srcpath'] . $object_id . "/page" . sprintf("%04d", $index) .  "_" . $thumb .".jpg?=_" . time() . "' hires='" . $args['srcpath'] . $object_id . "/page" . sprintf("%04d", $index) .  "_" . $full .".jpg?=_" . time() . "' gallery='" . $args['gallery'] . "'/>
 		</page>";
 		
 		return $xml;
