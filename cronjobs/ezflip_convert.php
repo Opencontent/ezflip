@@ -37,6 +37,11 @@ do
             {
                 $cli->output( $e->getMessage() );
             }
+            catch( InvalidArgumentException $e )
+            {
+                $entry->remove();
+                $cli->output( $e->getMessage() );
+            }
             catch( Exception $e )
             {
                 $cli->error( $e->getMessage() );                

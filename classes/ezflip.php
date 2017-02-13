@@ -47,7 +47,7 @@ class eZFlip
 
         if ( !$contentObjectAttribute instanceof eZContentObjectAttribute )
         {
-            throw new Exception( 'Attribute not found' );
+            throw new InvalidArgumentException( 'Attribute not found' );
         }
         $flip = self::instance( $contentObjectAttribute, $useCli );
         return $flip->convert();
