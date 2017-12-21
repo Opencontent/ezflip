@@ -35,6 +35,14 @@ class PdftkPpmHelper extends PdftkBaseHelper
         $scaleWitdh = $size;
 
         $infoCommand = "pdfinfo {$filePath}/{$fileName}";
+        if ( self::isCli() && !eZCLI::instance()->isQuiet() )
+        {
+            eZCLI::instance()->output( $infoCommand );
+        }
+        else
+        {
+            eZDebug::writeNotice( $infoCommand , __METHOD__ );
+        }
         $output = shell_exec( $infoCommand );
         if ( !empty( $output ) )
         {
@@ -57,6 +65,14 @@ class PdftkPpmHelper extends PdftkBaseHelper
                     $height = floatval( $widthHeight[1] );
                     $scaleHeight = intval( $scaleWitdh * $height / $width );
                     $command = "pdftoppm -png -r 72 -scale-to-x {$scaleWitdh} -scale-to-y {$scaleHeight} {$filePath}/{$fileName} {$filePath}/{$pageName}";
+                    if ( self::isCli() && !eZCLI::instance()->isQuiet() )
+                    {
+                        eZCLI::instance()->output( $command );
+                    }
+                    else
+                    {
+                        eZDebug::writeNotice( $command , __METHOD__ );
+                    }
                     system( $command );
                     $destFile = "{$filePath}/{$pageName}";
                     $srcFile = "{$filePath}/{$pageName}-1.png";

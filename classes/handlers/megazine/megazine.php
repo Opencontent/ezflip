@@ -57,6 +57,8 @@ class FlipMegazine implements FlipHandlerInterface
      */
     protected $pdfHelper;
 
+    private $clusterizeFiles;
+
     /**
      * @param eZContentObjectAttribute $attribute
      * @param bool $useCli
@@ -98,13 +100,21 @@ class FlipMegazine implements FlipHandlerInterface
 
         $this->generateContentObjectImages = $this->FlipINI->variable( 'FlipSettings', 'GenerateContentObjectImages' ) == 'enabled';
 
-        $this->flipVarDirectory = $this->SiteINI->variable( 'FileSettings','VarDir' ) . '/storage/original/application_flip';
+        $this->flipVarDirectory = self::getFlipVarDirectory();
         //@todo make flip folder versioned
         //$this->flipObjectDirectoryName = $this->attribute->attribute( 'id' ) . '-' . $this->attribute->attribute( 'version' );
         $this->flipObjectDirectoryName = $this->attribute->attribute( 'id' );
         $this->flipObjectDirectory = $this->flipVarDirectory . '/' . $this->flipObjectDirectoryName;
         $this->readFiles();
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getFlipVarDirectory()
+    {
+        return eZINI::instance()->variable( 'FileSettings','VarDir' ) . '/storage/original/application_flip';
     }
 
     protected function getPdfHelper()
@@ -157,9 +167,14 @@ class FlipMegazine implements FlipHandlerInterface
         }
 
         $storedFile = $this->attribute->storedFileInformation( false, false, false );
-        $storedFilePath = $this->SiteINI->variable( 'FileSettings','VarDir' ) . '/' . $storedFile['filepath'];
+        $storedFilePath = $storedFile['filepath'];
+        if (strpos($storedFile['filepath'], $this->SiteINI->variable( 'FileSettings','VarDir' )) === false) {
+            $storedFilePath = $this->SiteINI->variable('FileSettings', 'VarDir') . '/' . $storedFile['filepath'];
+        }
+        eZClusterFileHandler::instance($storedFilePath)->fetch();
         $this->getPdfHelper()->splitPDFPages( $this->flipObjectDirectory, $storedFilePath );
-        $this->readFiles();        
+        $this->readFiles();
+        eZClusterFileHandler::instance($storedFilePath)->deleteLocal();
         return $this;
     }
 
@@ -189,7 +204,9 @@ class FlipMegazine implements FlipHandlerInterface
         }
         $sizes = (array)$this->FlipINI->variable( 'FlipSettings', 'SizeThumb');
         $sizesOptions = $this->FlipINI->variable( 'FlipSettings', 'SizeThumbOptions');
-        
+
+        $this->clusterizeFiles = array();
+
         $i = 0;
         foreach( $this->files as $file )
         {
@@ -217,17 +234,31 @@ class FlipMegazine implements FlipHandlerInterface
                                                      $pageName,
                                                      $this->attribute->attribute( 'object' )->attribute( 'main_node_id' ) );
                 }
+
+                $this->clusterizeFiles[] = $this->flipObjectDirectory . '/' . $pageName;
             }
         }
+
         $this->deletePDFFiles();
         return $this;
+    }
+
+    private function clusterize($filePath)
+    {
+        $fileHandler = eZClusterFileHandler::instance();
+        if ($fileHandler->requiresClusterizing()) {
+            $filePath = str_replace(eZSys::rootDir() . eZSys::fileSeparator(), '', $filePath);
+            $mimeData = eZMimeType::findByFileContents( $filePath );
+            $fileHandler->fileStore( $filePath, 'ezflip', false, $mimeData['name'] );
+            $fileHandler->fileDeleteLocal($filePath);
+        }
     }
 
     protected function deletePDFFiles()
     {
         foreach( $this->files as $fileName )
         {
-            $file = eZClusterFileHandler::instance( $this->flipObjectDirectory . "/" . $fileName );
+            $file = new eZFSFileHandler( $this->flipObjectDirectory . "/" . $fileName );
             if ( $file->exists() )
             {
                 $file->delete();
@@ -273,7 +304,16 @@ class FlipMegazine implements FlipHandlerInterface
             }
             $xml .= FlipMegazineXmlHelper::closeBook();
             eZFile::create( "magazine_" . $book . ".xml", $this->flipObjectDirectory, $xml );
+
+            $filePath = $this->flipObjectDirectory . "/magazine_" . $book . ".xml";
+            $filePath = str_replace(eZSys::rootDir() . eZSys::fileSeparator(), '', $filePath);
+            eZClusterFileHandler::instance()->fileStore( $filePath, 'ezflip', true, 'text/xml' );
         }
+
+        foreach($this->clusterizeFiles as $file){
+            $this->clusterize($file);
+        }
+
         return $this;
     }
 
@@ -304,7 +344,7 @@ class FlipMegazine implements FlipHandlerInterface
                 return true;
             }
         }
-        eZDebug::writeNotice( 'File ' . $this->flipObjectDirectory . "/magazine_" . implode('|',$books) . ".xml" . ' not found' );
+        eZDebug::writeDebug( 'File ' . $this->flipObjectDirectory . "/magazine_" . implode('|',$books) . ".xml" . ' not found' );
         return false;
 
     }
@@ -326,7 +366,7 @@ class FlipMegazine implements FlipHandlerInterface
                 $file = eZClusterFileHandler::instance( $this->flipObjectDirectory . "/magazine_" . $book . ".xml" );
                 if ( $file->exists() )
                 {
-                    $xml = simplexml_load_file( $file->filePath );
+                    $xml = simplexml_load_string( $file->fetchContents() );
                     $width = $xml['pagewidth'];
                     $height = $xml['pageheight'] + 100;
                     return array( $width, $height );
@@ -360,7 +400,8 @@ class FlipMegazine implements FlipHandlerInterface
             }
         }
         $info['path'] = $this->flipObjectDirectory . '/'. $fileNameWithoutSuffix . $suffix;
-        $info['content'] = file_get_contents( $info['path'] );
+        $file = eZClusterFileHandler::instance($info['path']);
+        $info['content'] = $file->fetchContents();
         return $info;
     }
 
