@@ -323,7 +323,7 @@ class FlipMegazine implements FlipHandlerInterface
             ->createImages()
             ->createBook();
 
-        eZContentCacheManager::clearObjectViewCache( $this->attribute->attribute( 'contentobject_id' ) );
+        eZContentCacheManager::clearContentCache( $this->attribute->attribute( 'contentobject_id' ) );
 
 		return true;
     }
