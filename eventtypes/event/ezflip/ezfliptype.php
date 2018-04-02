@@ -4,9 +4,9 @@ class eZFlipType extends eZWorkflowEventType
 {
     const WORKFLOW_TYPE_STRING = "ezflip";
     
-	function eZFlipType()
+	function __construct()
     {
-        $this->eZWorkflowEventType( eZFlipType::WORKFLOW_TYPE_STRING, ezpI18n::tr( 'opencontent', 'Flip File PDF' ) );
+        parent::__construct( eZFlipType::WORKFLOW_TYPE_STRING, ezpI18n::tr( 'opencontent', 'Flip File PDF' ) );
         $this->setTriggerTypes( array( 'content' => array( 'publish' => array( 'after' ) ) ) );
     }
 
