@@ -42,7 +42,7 @@ class eZFlipTemplateOperators
 
     function modify( $tpl, $operatorName, $operatorParameters, $rootNamespace, $currentNamespace, &$operatorValue, $namedParameters )
     {
-        $contentObjectAttribute = eZContentObjectAttribute::fetch( $namedParameters['id'], $namedParameters['version'] );
+        $contentObjectAttribute = eZContentObjectAttribute::fetch( (int)$namedParameters['id'], (int)$namedParameters['version'] );
         if ( !$contentObjectAttribute instanceof eZContentObjectAttribute )
         {
             return false;
