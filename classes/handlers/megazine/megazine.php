@@ -344,7 +344,7 @@ class FlipMegazine implements FlipHandlerInterface
                 return true;
             }
         }
-        eZDebug::writeDebug( 'File ' . $this->flipObjectDirectory . "/magazine_" . implode('|',$books) . ".xml" . ' not found' );
+        eZDebugSetting::writeDebug( 'ezflip', 'File ' . $this->flipObjectDirectory . "/magazine_" . implode('|',$books) . ".xml" . ' not found' );
         return false;
 
     }
