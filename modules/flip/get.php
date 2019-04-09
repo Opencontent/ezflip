@@ -9,14 +9,14 @@ $FileName = $Params["FileName"];
 $contentObjectAttribute = eZContentObjectAttribute::fetch( $ContentObjectAttributeID, $ContentObjectVersion );
 if ( !$contentObjectAttribute instanceof eZContentObjectAttribute )
 {
-    eZDebug::writeError( "Attribute not found" );
+    eZDebugSetting::writeError( 'ezflip', "Attribute not found" );
     header("HTTP/1.0 404 Not Found");
     eZExecution::CleanExit();
 }
 
 if ( !$contentObjectAttribute->attribute( 'object' )->attribute( 'can_read' ) )
 {
-    eZDebug::writeError( "User does haven't permission to read object" );
+    eZDebugSetting::writeError( 'ezflip', "User does haven't permission to read object" );
     header("HTTP/1.0 403 Forbidden");
     eZExecution::CleanExit();
 }
@@ -30,7 +30,7 @@ try
 }
 catch( Exception $e )
 {
-    eZDebug::writeError( $e->getMessage() );
+    eZDebugSetting::writeError( 'ezflip', $e->getMessage() );
     header("HTTP/1.0 403 Forbidden");    
 }
 eZExecution::CleanExit();

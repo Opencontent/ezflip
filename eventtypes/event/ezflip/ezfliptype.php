@@ -52,7 +52,7 @@ class eZFlipType extends eZWorkflowEventType
                     }
                     catch( Exception $e )
                     {
-                        eZDebug::writeError( $e->getMessage(), __METHOD__ );
+                        eZDebugSetting::writeError( 'ezflip', $e->getMessage(), __METHOD__ );
                     }
                 }
             }
