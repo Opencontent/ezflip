@@ -150,7 +150,7 @@ class FlipYumpu implements FlipHandlerInterface
      */
     function getFlipFileInfo( $filename )
     {
-        eZDebug::writeError( "Yumpu handler can not show single page", __METHOD__ );
+        eZDebugSetting::writeError( 'ezflip', "Yumpu handler can not show single page", __METHOD__ );
         return array();
     }
 

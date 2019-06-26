@@ -77,7 +77,7 @@ class eZFlipTemplateOperators
         }
         catch( Exception $e )
         {
-            eZDebug::writeNotice( $e->getMessage(), __METHOD__ );
+            eZDebugSetting::writeError( 'ezflip', $e->getMessage(), __METHOD__ );
         }
 
         return true;
